@@ -7,190 +7,248 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
-.container{max-width:1200px;margin:0 auto;padding:16px}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}
 h1{font-size:1.4em;color:#fff;margin-bottom:2px}
-.subtitle{color:#e8740c;font-size:.82em;margin-bottom:14px}
-
-/* TOP ACTIONS */
-.actions{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.actions button{padding:6px 13px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.8em;transition:.2s}
-.actions button:hover{border-color:#e8740c;color:#fff}
-.actions button.export{border-color:#1b7340}
-.actions button.export:hover{background:#1b7340;color:#fff}
-.actions button.danger{border-color:#c41e3a}
-.actions button.danger:hover{background:#c41e3a;color:#fff}
-
-/* GROUP BUILDER */
-.builder{background:#1a1a2e;border:2px solid #2a2a42;border-radius:10px;padding:14px;margin-bottom:14px}
-.builder h2{font-size:1em;color:#fff;margin-bottom:10px}
-.new-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.new-row input{flex:1;min-width:160px;padding:7px 10px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.88em}
-.new-row input:focus{outline:none;border-color:#e8740c}
-.new-row button{padding:7px 14px;background:#e8740c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.85em}
-.new-row button:hover{background:#c55d0a}
-
-/* GROUP TABS */
-.group-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.gtab{padding:6px 14px;background:#12121f;border:2px solid #2a2a42;border-radius:6px;cursor:pointer;font-size:.82em;color:#aaa;transition:.15s;position:relative}
-.gtab:hover{border-color:#e8740c;color:#fff}
-.gtab.active{background:#6d2e46;border-color:#6d2e46;color:#fff}
-.gtab .cnt{font-size:.75em;color:#888;margin-left:4px}
-.gtab.active .cnt{color:#ddd}
-.gtab .x{position:absolute;top:-6px;right:-6px;background:#c41e3a;color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:.65em;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
-.gtab:hover .x{display:flex}
-
-/* ACTIVE GROUP PANEL */
-.gpanel{background:#12121f;border:2px solid #2a2a42;border-radius:8px;padding:12px;margin-bottom:10px}
-.gpanel-title{font-weight:bold;color:#e8740c;margin-bottom:8px;font-size:.95em}
-.pick-label{font-size:.8em;color:#777;margin-bottom:4px}
-.picks{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.pbtn{padding:5px 10px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:5px;cursor:pointer;font-size:.8em;transition:.12s}
-.pbtn:hover{border-color:#e8740c;color:#fff}
-.pbtn.in{background:#6d2e46;border-color:#6d2e46;color:#fff}
-.pbtn.taken{background:#222;border-color:#444;color:#555;cursor:not-allowed;text-decoration:line-through}
-
-/* RUBRIC */
-.rubric{display:grid;grid-template-columns:1fr;gap:8px}
-.crit{background:#0f0f1a;border-radius:6px;padding:8px 10px}
-.crit-top{display:flex;justify-content:space-between;align-items:center}
-.crit-name{font-weight:bold;color:#ccc;font-size:.85em}
-.crit-desc{font-size:.7em;color:#555}
-.crit-val{color:#e8740c;font-weight:bold;font-size:.95em}
-.sbtns{display:flex;gap:4px;margin-top:5px}
-.sb{width:36px;height:32px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:5px;cursor:pointer;font-weight:bold;font-size:.88em;transition:.12s}
-.sb:hover{border-color:#e8740c;color:#fff}
-.sb.on{color:#fff}
-.sb.s4.on{background:#1b7340;border-color:#1b7340}
-.sb.s3.on{background:#2e5090;border-color:#2e5090}
-.sb.s2.on{background:#b8860b;border-color:#b8860b}
-.sb.s1.on{background:#c41e3a;border-color:#c41e3a}
-.sb.clr{width:auto;padding:0 8px;font-size:.7em}
-
-.notes-row{margin-top:8px}
-.notes-row label{font-size:.78em;color:#666;display:block;margin-bottom:2px}
-.notes-row textarea{width:100%;min-height:50px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:7px;font-family:inherit;font-size:.83em;resize:vertical}
-.notes-row textarea:focus{outline:none;border-color:#e8740c}
-
-.avg-bar{text-align:center;margin-top:8px;padding:8px;background:#0f0f1a;border-radius:6px}
-.avg-bar .big{font-size:1.6em;font-weight:bold;color:#e8740c}
-.avg-bar .sm{font-size:.72em;color:#666}
-
-.no-group{text-align:center;color:#555;padding:20px;font-size:.88em}
-
-/* SPREADSHEET — always visible */
-.sheet-section{background:#1a1a2e;border:2px solid #2a2a42;border-radius:10px;padding:14px}
-.sheet-section h2{font-size:1em;color:#fff;margin-bottom:8px}
-.sheet-wrap{overflow-x:auto}
-table.sh{border-collapse:collapse;width:100%;font-size:.8em}
-table.sh th{background:#12121f;color:#e8740c;padding:7px 8px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0;z-index:1}
-table.sh td{padding:6px 8px;border:1px solid #2a2a42;background:#0f0f1a}
-table.sh tr:hover td{background:#151525}
+.sub{color:#e8740c;font-size:.82em;margin-bottom:14px}
+.bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.bar button{padding:7px 14px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.82em;transition:.2s}
+.bar button:hover{border-color:#e8740c;color:#fff}
+.bar button.go{background:#e8740c;border-color:#e8740c;color:#fff;font-weight:bold;font-size:.9em}
+.bar button.go:hover{background:#c55d0a}
+.bar button.ex{border-color:#1b7340}.bar button.ex:hover{background:#1b7340;color:#fff}
+.bar button.dn{border-color:#c41e3a}.bar button.dn:hover{background:#c41e3a;color:#fff}
+.sw{overflow-x:auto}
+table.sh{border-collapse:collapse;width:100%;font-size:.82em}
+table.sh th{background:#1a1a2e;color:#e8740c;padding:8px 9px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0;z-index:2}
+table.sh td{padding:7px 9px;border:1px solid #2a2a42;background:#12121f}
+table.sh tr:hover td{background:#1a1a2e}
 table.sh .sc{text-align:center;font-weight:bold}
 table.sh .av{color:#e8740c;font-weight:bold;text-align:center}
 table.sh .nt{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#888;font-size:.9em}
 table.sh .gr{color:#6d2e46;font-size:.88em}
-table.sh .un{color:#c41e3a;font-style:italic}
+table.sh .un{color:#c41e3a;font-style:italic;font-size:.85em}
+.el{color:#e8740c;cursor:pointer;text-decoration:underline;font-size:.82em}.el:hover{color:#fff}
+
+/* MODAL */
+.ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:flex-start;padding:24px 12px;overflow-y:auto}
+.ov.open{display:flex}
+.mod{background:#1a1a2e;border:2px solid #e8740c;border-radius:14px;width:100%;max-width:740px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mh{background:#0f0f1a;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2a2a42}
+.mh h2{font-size:1.05em;color:#fff}
+.mh .cl{background:none;border:none;color:#888;font-size:1.4em;cursor:pointer}.mh .cl:hover{color:#c41e3a}
+.mb{padding:16px 18px}
+
+.sl{font-size:.86em;color:#e8740c;font-weight:bold;margin-bottom:5px}
+.gi{width:100%;padding:8px 11px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.9em;margin-bottom:12px}
+.gi:focus{outline:none;border-color:#e8740c}
+.pl{font-size:.8em;color:#777;margin-bottom:4px}
+.pks{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.pk{padding:5px 10px;border:2px solid #333;background:#12121f;color:#aaa;border-radius:5px;cursor:pointer;font-size:.8em;transition:.12s}
+.pk:hover{border-color:#e8740c;color:#fff}
+.pk.in{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.pk.tk{background:#222;border-color:#444;color:#555;cursor:not-allowed;text-decoration:line-through}
+
+/* RUBRIC TABLE */
+.rt-title{font-size:.92em;font-weight:bold;color:#fff;margin:8px 0 10px;padding-top:10px;border-top:1px solid #2a2a42}
+.rt{width:100%;border-collapse:collapse;font-size:.78em;margin-bottom:6px}
+.rt th{background:#12121f;color:#e8740c;padding:7px 6px;text-align:center;border:1px solid #2a2a42;font-size:.9em}
+.rt th:first-child{text-align:left;width:110px}
+.rt td{padding:6px;border:1px solid #2a2a42;vertical-align:top;text-align:center;color:#bbb;line-height:1.25}
+.rt td:first-child{text-align:left;font-weight:bold;color:#ccc;background:#0f0f1a}
+.rt td.pick{cursor:pointer;transition:.12s;position:relative}
+.rt td.pick:hover{background:#1e1e35;color:#fff}
+.rt td.pick.s4{background:#1b7340;color:#fff}
+.rt td.pick.s3{background:#2e5090;color:#fff}
+.rt td.pick.s2{background:#6b5a0b;color:#fff}
+.rt td.pick.s1{background:#8b1a2b;color:#fff}
+
+/* MIDPOINT SLIDER ROW */
+.mp-row{display:flex;align-items:center;gap:8px;margin-top:4px;margin-bottom:10px;padding:6px 10px;background:#0f0f1a;border-radius:6px}
+.mp-row .mp-label{font-size:.8em;color:#888;white-space:nowrap}
+.mp-row .mp-val{font-size:1.1em;font-weight:bold;color:#e8740c;min-width:32px;text-align:center}
+.mp-row input[type=range]{flex:1;accent-color:#e8740c;cursor:pointer}
+.mp-row .mp-clear{background:none;border:1px solid #444;color:#888;border-radius:4px;padding:2px 8px;font-size:.75em;cursor:pointer}
+.mp-row .mp-clear:hover{border-color:#c41e3a;color:#c41e3a}
+
+.nm{margin-bottom:12px}
+.nm label{font-size:.8em;color:#666;display:block;margin-bottom:2px}
+.nm textarea{width:100%;min-height:55px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:7px;font-family:inherit;font-size:.83em;resize:vertical}
+.nm textarea:focus{outline:none;border-color:#e8740c}
+.ma{text-align:center;padding:8px;background:#0f0f1a;border-radius:6px;margin-bottom:12px}
+.ma .big{font-size:1.6em;font-weight:bold;color:#e8740c}
+.ma .sm{font-size:.7em;color:#666}
+.mf{display:flex;gap:8px;justify-content:flex-end}
+.mf button{padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.88em;font-weight:bold;border:none}
+.mf .ca{background:#333;color:#aaa}.mf .ca:hover{background:#444;color:#fff}
+.mf .sv{background:#e8740c;color:#fff}.mf .sv:hover{background:#c55d0a}
+.mf .dl{background:#c41e3a;color:#fff;margin-right:auto}.mf .dl:hover{background:#a01530}
+
+@media(max-width:600px){.wrap{padding:10px}}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 <h1>Recording Superstars Podcast Grader</h1>
-<p class="subtitle">Music 8 • Mr. Burgess • STEM Middle Academy</p>
-
-<div class="actions">
-<button class="export" onclick="exportCSV()">Export CSV for Schoology</button>
+<p class="sub">Music 8 &bull; Mr. Burgess &bull; STEM Middle Academy</p>
+<div class="bar">
+<button class="go" onclick="openNew()">+ Grade a Group</button>
+<button class="ex" onclick="exportCSV()">Export CSV</button>
 <button onclick="exportJSON()">Save Backup</button>
 <button onclick="document.getElementById('imp').click()">Load Backup</button>
 <input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
-<button class="danger" onclick="clearAll()">Clear All</button>
+<button class="dn" onclick="clearAll()">Clear All</button>
+</div>
+<div class="sw" id="sa"></div>
 </div>
 
-<div class="builder" id="builder"></div>
-<div class="sheet-section" id="sheetSection"></div>
+<div class="ov" id="ov" onclick="if(event.target===this)closeM()">
+<div class="mod">
+<div class="mh"><h2 id="mt">Grade Group</h2><button class="cl" onclick="closeM()">&times;</button></div>
+<div class="mb" id="mb"></div>
+</div>
 </div>
 
 <script>
 const R=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah"];
-const C=[{id:'content',n:'Content & Accuracy',d:'Key facts, unit theme connections'},{id:'discussion',n:'Discussion Quality',d:'Natural conversation, equal contributions'},{id:'script',n:'Script & Preparation',d:'Structure, discussion Q, timing'},{id:'music',n:'Original Music',d:'BandLab original, creative choices'},{id:'production',n:'Production Quality',d:'Clear audio, levels, transitions'}];
+const CR=[
+  {id:'content',name:'Content & Accuracy',
+   d4:'All key facts accurate; original connections to technology, race, or power themes',
+   d3:'Key facts accurate; connects to at least one unit theme',
+   d2:'Some facts accurate but surface-level; limited theme connection',
+   d1:'Significant errors or missing info; no theme connection'},
+  {id:'discussion',name:'Discussion Quality',
+   d4:'Natural, engaging; all members contribute equally; smooth transitions',
+   d3:'Clear conversation; all contribute; minor awkward moments',
+   d2:'Scripted/stilted; uneven contributions; some disorganization',
+   d1:'Disconnected; one person dominates; no structure'},
+  {id:'script',name:'Script & Preparation',
+   d4:'Thorough prep; clear structure; discussion Q explored in depth; 5\u20137 min',
+   d3:'Clear structure; discussion Q addressed; close to 5\u20137 min',
+   d2:'Incomplete structure; Q mentioned not explored; timing off',
+   d1:'No script or minimal prep; Q not addressed; way off time'},
+  {id:'music',name:'Original Music',
+   d4:'Polished BandLab original; fits tone; intentional creative choices',
+   d3:'BandLab original; appropriate; basic creative choices',
+   d2:'Music present but minimal (single unedited loop); limited creativity',
+   d1:'No original music or incomplete'},
+  {id:'production',name:'Production Quality',
+   d4:'Clear audio; balanced levels; smooth transitions; professional feel',
+   d3:'Mostly clear; functional transitions; minor issues',
+   d2:'Noticeable issues (uneven levels, noise); rough transitions',
+   d1:'Hard to hear/understand; no editing evident'}
+];
 
-let G=[],ag=null;
-function init(){const s=localStorage.getItem('pg3');if(s)G=JSON.parse(s);draw()}
-function sv(){localStorage.setItem('pg3',JSON.stringify(G))}
-function asgd(){const s=new Set();G.forEach(g=>g.m.forEach(x=>s.add(x)));return s}
+let G=[],ei=null,tmp={n:'',m:[],sc:{},nt:''};
+function init(){const s=localStorage.getItem('pg5');if(s)G=JSON.parse(s);dS()}
+function sv(){localStorage.setItem('pg5',JSON.stringify(G))}
+function asgd(ex){const s=new Set();G.forEach((g,i)=>{if(i!==ex)g.m.forEach(x=>s.add(x))});return s}
 function avg(sc){const v=Object.values(sc);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
-function info(nm){const g=G.find(x=>x.m.includes(nm));if(!g)return{sc:{},av:null,gn:null,nt:''};return{sc:g.sc,av:avg(g.sc),gn:g.n,nt:g.nt}}
-function esc(s){return s.replace(/'/g,"\\'")}
+function inf(nm){const g=G.find(x=>x.m.includes(nm));if(!g)return{sc:{},av:null,gn:null,nt:''};return{sc:g.sc,av:avg(g.sc),gn:g.n,nt:g.nt}}
+function scColor(v){if(!v)return'#444';if(v>=3.5)return'#1b7340';if(v>=2.5)return'#2e5090';if(v>=1.5)return'#b8860b';return'#c41e3a'}
 
-function draw(){drawBuilder();drawSheet()}
-
-function drawBuilder(){
-const el=document.getElementById('builder');
-let h=`<h2>Rubric Grading</h2>`;
-h+=`<div class="new-row"><input id="gn" placeholder="New group name..." onkeydown="if(event.key==='Enter')addG()"><button onclick="addG()">+ New Group</button></div>`;
-if(G.length){
-h+=`<div class="group-tabs">`;
-G.forEach((g,i)=>{
-h+=`<div class="gtab ${ag===i?'active':''}" onclick="selG(${i})">${g.n}<span class="cnt">(${g.m.length})</span><button class="x" onclick="event.stopPropagation();delG(${i})">✕</button></div>`;
-});
-h+=`</div>`;
-if(ag!==null&&G[ag]){
-const g=G[ag];const aset=asgd();
-h+=`<div class="gpanel"><div class="gpanel-title">${g.n}</div>`;
-h+=`<div class="pick-label">Click names to assign/remove:</div><div class="picks">`;
-R.forEach(s=>{const me=g.m.includes(s);const other=!me&&aset.has(s);
-h+=`<button class="pbtn ${me?'in':other?'taken':''}" ${other?'disabled':''} onclick="${other?'':`tog(${ag},'${esc(s)}')`}">${s.split(',')[0]}</button>`});
-h+=`</div>`;
-
-// RUBRIC
-h+=`<div class="rubric">`;
-C.forEach(c=>{const v=g.sc[c.id]||0;
-h+=`<div class="crit"><div class="crit-top"><div><span class="crit-name">${c.n}</span><br><span class="crit-desc">${c.d}</span></div><span class="crit-val">${v||'—'}</span></div>`;
-h+=`<div class="sbtns">${[1,2,3,4].map(n=>`<button class="sb s${n} ${v===n?'on':''}" onclick="sc(${ag},'${c.id}',${n})">${n}</button>`).join('')}<button class="sb clr" onclick="sc(${ag},'${c.id}',0)">Clear</button></div></div>`});
-h+=`</div>`;
-
-h+=`<div class="notes-row"><label>Notes for Schoology feedback</label><textarea id="nt${ag}" oninput="sn(${ag})">${g.nt||''}</textarea></div>`;
-const a=avg(g.sc);
-h+=`<div class="avg-bar"><div class="sm">Group Average</div><div class="big">${a!==null?a.toFixed(2):'—'}</div></div>`;
-h+=`</div>`;
-}
-} else {
-h+=`<div class="no-group">Create a group to start grading. Click the group tab, assign students, then score the rubric.</div>`;
-}
-el.innerHTML=h;
-}
-
-function drawSheet(){
-const el=document.getElementById('sheetSection');
-let h=`<h2>All Student Grades</h2><div class="sheet-wrap"><table class="sh"><thead><tr><th>Student</th><th>Group</th>`;
-C.forEach(c=>h+=`<th>${c.n}</th>`);
+function dS(){
+const el=document.getElementById('sa');
+let h=`<table class="sh"><thead><tr><th>Student</th><th>Group</th>`;
+CR.forEach(c=>h+=`<th>${c.name}</th>`);
 h+=`<th>Avg</th><th>Notes</th></tr></thead><tbody>`;
 R.forEach(nm=>{
-const d=info(nm);
+const d=inf(nm);
 h+=`<tr><td><strong>${nm}</strong></td>`;
-h+=`<td class="gr">${d.gn||'<span class="un">Unassigned</span>'}</td>`;
-C.forEach(c=>{const v=d.sc[c.id];const cl=v===4?'#1b7340':v===3?'#2e5090':v===2?'#b8860b':v===1?'#c41e3a':'#444';
-h+=`<td class="sc" style="color:${cl}">${v||'—'}</td>`});
-h+=`<td class="av">${d.av!==null?d.av.toFixed(2):'—'}</td>`;
+h+=`<td class="gr">${d.gn?`<span class="el" onclick="eG('${d.gn.replace(/'/g,"\\'")}')">${d.gn}</span>`:'<span class="un">Unassigned</span>'}</td>`;
+CR.forEach(c=>{const v=d.sc[c.id];
+h+=`<td class="sc" style="color:${scColor(v)}">${v||'\u2014'}</td>`});
+h+=`<td class="av">${d.av!==null?d.av.toFixed(2):'\u2014'}</td>`;
 h+=`<td class="nt" title="${(d.nt||'').replace(/"/g,'&quot;')}">${d.nt||''}</td></tr>`});
-h+=`</tbody></table></div>`;
+h+=`</tbody></table>`;
 el.innerHTML=h;
 }
 
-function addG(){const i=document.getElementById('gn');const n=i.value.trim();if(!n)return;G.push({n,m:[],sc:{},nt:''});ag=G.length-1;i.value='';sv();draw()}
-function selG(i){ag=ag===i?null:i;draw()}
-function delG(i){if(!confirm(`Delete "${G[i].n}"?`))return;G.splice(i,1);if(ag===i)ag=null;else if(ag>i)ag--;sv();draw()}
-function tog(gi,s){const g=G[gi];const x=g.m.indexOf(s);if(x>=0)g.m.splice(x,1);else g.m.push(s);sv();draw()}
-function sc(gi,cid,v){if(v===0)delete G[gi].sc[cid];else G[gi].sc[cid]=v;sv();draw()}
-function sn(gi){G[gi].nt=document.getElementById('nt'+gi).value;sv();drawSheet()}
+function openNew(){ei=null;tmp={n:'',m:[],sc:{},nt:''};document.getElementById('mt').textContent='Grade a Group';dM();document.getElementById('ov').classList.add('open')}
+function eG(gn){const i=G.findIndex(g=>g.n===gn);if(i<0)return;ei=i;const g=G[i];tmp={n:g.n,m:[...g.m],sc:{...g.sc},nt:g.nt||''};document.getElementById('mt').textContent='Edit: '+g.n;dM();document.getElementById('ov').classList.add('open')}
+function closeM(){document.getElementById('ov').classList.remove('open');ei=null}
+
+function dM(){
+const el=document.getElementById('mb');const tk=asgd(ei);
+let h=`<div class="sl">Group Name</div><input class="gi" id="mgn" value="${tmp.n}" oninput="tmp.n=this.value" placeholder="e.g. Team Bessie, Group 1...">`;
+h+=`<div class="pl">Click names to assign/remove:</div><div class="pks">`;
+R.forEach(s=>{const me=tmp.m.includes(s);const oth=!me&&tk.has(s);
+h+=`<button class="pk ${me?'in':oth?'tk':''}" ${oth?'disabled':''} onclick="${oth?'':`mt('${s.replace(/'/g,"\\'")}')`}">${s}</button>`});
+h+=`</div>`;
+
+// RUBRIC TABLE
+h+=`<div class="rt-title">Click a column to set the base score, then fine-tune with the slider</div>`;
+h+=`<table class="rt"><thead><tr><th></th><th>4 \u2014 Exemplary</th><th>3 \u2014 Proficient</th><th>2 \u2014 Developing</th><th>1 \u2014 Beginning</th></tr></thead><tbody>`;
+CR.forEach(c=>{
+const v=tmp.sc[c.id]||0;
+const base=v?Math.ceil(v-0.001):0; // which column is highlighted: 4 if 3.5-4, 3 if 2.5-3.4, etc
+h+=`<tr><td>${c.name}</td>`;
+[4,3,2,1].forEach(n=>{
+// highlight the column if the score falls in that range (n-1 < v <= n), or exact match
+const hi=(v>0 && Math.ceil(v-0.001)===n)?` s${n}`:'';
+h+=`<td class="pick${hi}" onclick="mBase('${c.id}',${n})">${c['d'+n]}</td>`;
+});
+h+=`</tr>`;
+// Slider row for fine-tuning
+if(v>0){
+const lo=Math.max(1,Math.floor(v)-0.9);
+const rMin=(base===1)?1:(base-1+0.1);
+const rMax=base;
+h+=`<tr><td colspan="5"><div class="mp-row"><span class="mp-label">${c.name}:</span><span class="mp-val" id="mpv_${c.id}">${v.toFixed(1)}</span>`;
+h+=`<input type="range" min="${rMin}" max="${rMax}" step="0.1" value="${v}" oninput="mSlide('${c.id}',this.value)">`;
+h+=`<button class="mp-clear" onclick="mClear('${c.id}')">Clear</button></div></td></tr>`;
+}
+});
+h+=`</tbody></table>`;
+
+h+=`<div class="nm"><label>Notes for Schoology</label><textarea id="mnt" oninput="tmp.nt=this.value">${tmp.nt}</textarea></div>`;
+const a=avg(tmp.sc);
+h+=`<div class="ma"><div class="sm">Group Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
+h+=`<div class="mf">`;
+if(ei!==null)h+=`<button class="dl" onclick="delG()">Delete Group</button>`;
+h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveG()">Save</button></div>`;
+el.innerHTML=h;
+}
+
+function mt(s){const i=tmp.m.indexOf(s);if(i>=0)tmp.m.splice(i,1);else tmp.m.push(s);dM()}
+
+function mBase(cid,n){
+// Clicking a column sets it to the top of that range (e.g. clicking "3" sets to 3.0)
+tmp.sc[cid]=n;
+dM();
+}
+
+function mSlide(cid,val){
+tmp.sc[cid]=parseFloat(parseFloat(val).toFixed(1));
+// Update just the display value without full redraw to keep slider smooth
+const vEl=document.getElementById('mpv_'+cid);
+if(vEl)vEl.textContent=tmp.sc[cid].toFixed(1);
+// Update avg
+const a=avg(tmp.sc);
+const aEl=document.querySelector('.ma .big');
+if(aEl)aEl.textContent=a!==null?a.toFixed(2):'\u2014';
+}
+
+function mClear(cid){delete tmp.sc[cid];dM()}
+
+function saveG(){
+const name=tmp.n.trim();
+if(!name){alert('Enter a group name.');return}
+if(!tmp.m.length){alert('Assign at least one student.');return}
+const obj={n:name,m:[...tmp.m],sc:{...tmp.sc},nt:tmp.nt};
+if(ei!==null)G[ei]=obj;else G.push(obj);
+sv();dS();closeM();
+}
+function delG(){if(!confirm(`Delete "${G[ei].n}"?`))return;G.splice(ei,1);sv();dS();closeM()}
 
 function exportCSV(){
 let csv='Student,Group,Content & Accuracy,Discussion Quality,Script & Preparation,Original Music,Production Quality,Average,Notes\n';
-R.forEach(nm=>{const d=info(nm);const ss=C.map(c=>d.sc[c.id]||'');const nt=(d.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
+R.forEach(nm=>{const d=inf(nm);const ss=CR.map(c=>d.sc[c.id]||'');const nt=(d.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
 csv+=`"${nm}","${d.gn||''}",${ss.join(',')},${d.av!==null?d.av.toFixed(2):''},"${nt}"\n`});
-const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`podcast_grades_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
-function exportJSON(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(G,null,2)],{type:'application/json'}));a.download=`podcast_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
-function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace all data?')){G=JSON.parse(ev.target.result);ag=null;sv();draw()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
-function clearAll(){if(!confirm('Delete everything?'))return;if(!confirm('Sure?'))return;G=[];ag=null;localStorage.removeItem('pg3');sv();draw()}
+dl(csv,'text/csv',`podcast_grades_${new Date().toISOString().slice(0,10)}.csv`)}
+function exportJSON(){dl(JSON.stringify(G,null,2),'application/json',`podcast_backup_${new Date().toISOString().slice(0,10)}.json`)}
+function dl(d,t,n){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:t}));a.download=n;a.click()}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace all data?')){G=JSON.parse(ev.target.result);sv();dS()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
+function clearAll(){if(!confirm('Delete everything?'))return;if(!confirm('Sure?'))return;G=[];localStorage.removeItem('pg5');sv();dS()}
 
 init();
 </script>
