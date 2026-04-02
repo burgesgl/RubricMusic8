@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podcast Grader — Music 8</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:1.5em;color:#fff;margin-bottom:2px}
+.subtitle{color:#e8740c;font-size:.85em;margin-bottom:16px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:8px 18px;background:#1a1a2e;border:2px solid #333;border-radius:8px;cursor:pointer;font-size:.85em;color:#aaa;transition:.2s}
+.tab:hover{border-color:#e8740c;color:#fff}
+.tab.active{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.group-section{background:#1a1a2e;border:2px solid #2a2a42;border-radius:12px;padding:18px;margin-bottom:16px}
+.group-section h2{font-size:1.1em;color:#fff;margin-bottom:12px}
+.group-name-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.group-name-row input{flex:1;min-width:180px;padding:8px 12px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.9em}
+.group-name-row input:focus{outline:none;border-color:#e8740c}
+.group-name-row button{padding:8px 14px;background:#e8740c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.85em}
+.group-name-row button:hover{background:#c55d0a}
+.group-card{background:#12121f;border:2px solid #2a2a42;border-radius:10px;padding:14px;margin-bottom:10px;transition:.2s}
+.group-card:hover{border-color:#444}
+.group-card.active{border-color:#e8740c}
+.group-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.group-header .gname{font-weight:bold;font-size:1em}
+.group-header .gscore{color:#e8740c;font-weight:bold;font-size:1.1em}
+.group-members{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.member-tag{background:#1a1a2e;border:1px solid #444;border-radius:4px;padding:2px 8px;font-size:.8em;color:#ccc}
+.del-group{background:none;border:none;color:#666;cursor:pointer;font-size:1em;padding:2px 6px}
+.del-group:hover{color:#c41e3a}
+.student-picker{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.pick-btn{padding:6px 12px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:6px;cursor:pointer;font-size:.82em;transition:.15s}
+.pick-btn:hover{border-color:#e8740c;color:#fff}
+.pick-btn.picked{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.pick-btn.assigned{background:#333;border-color:#555;color:#666;cursor:not-allowed;text-decoration:line-through}
+.criteria{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.criterion{background:#0f0f1a;border-radius:8px;padding:10px 12px}
+.crit-row{display:flex;justify-content:space-between;align-items:center}
+.crit-name{font-weight:bold;color:#ccc;font-size:.88em}
+.crit-desc{font-size:.72em;color:#666}
+.crit-score{color:#e8740c;font-weight:bold;min-width:24px;text-align:right}
+.score-btns{display:flex;gap:5px;margin-top:6px}
+.sbtn{width:38px;height:34px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.9em;transition:.15s}
+.sbtn:hover{border-color:#e8740c;color:#fff}
+.sbtn.sel{color:#fff}
+.sbtn.s4.sel{background:#1b7340;border-color:#1b7340}
+.sbtn.s3.sel{background:#2e5090;border-color:#2e5090}
+.sbtn.s2.sel{background:#b8860b;border-color:#b8860b}
+.sbtn.s1.sel{background:#c41e3a;border-color:#c41e3a}
+.notes-box{margin-top:10px}
+.notes-box label{font-size:.8em;color:#777;display:block;margin-bottom:3px}
+.notes-box textarea{width:100%;min-height:60px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;font-family:inherit;font-size:.85em;resize:vertical}
+.notes-box textarea:focus{outline:none;border-color:#e8740c}
+.avg-row{text-align:center;margin-top:12px;padding:10px;background:#0f0f1a;border-radius:8px}
+.avg-row .avg-num{font-size:1.8em;font-weight:bold;color:#e8740c}
+.avg-row .avg-lbl{font-size:.75em;color:#777}
+.sheet-wrap{overflow-x:auto;margin-top:8px}
+table.sheet{border-collapse:collapse;width:100%;font-size:.82em}
+table.sheet th{background:#1a1a2e;color:#e8740c;padding:8px 10px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0}
+table.sheet td{padding:7px 10px;border:1px solid #2a2a42;background:#12121f}
+table.sheet tr:hover td{background:#1a1a2e}
+table.sheet .score-cell{text-align:center;font-weight:bold}
+table.sheet .avg-cell{color:#e8740c;font-weight:bold;text-align:center}
+table.sheet .notes-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#999;font-size:.9em}
+table.sheet .group-cell{color:#6d2e46;font-size:.85em}
+.actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.actions button{padding:7px 14px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.82em;transition:.2s}
+.actions button:hover{border-color:#e8740c;color:#fff}
+.actions button.export{border-color:#1b7340}
+.actions button.export:hover{background:#1b7340;color:#fff}
+.actions button.danger{border-color:#c41e3a}
+.actions button.danger:hover{background:#c41e3a;color:#fff}
+.empty{text-align:center;padding:30px;color:#555;font-size:.9em}
+@media(max-width:600px){.container{padding:10px}.sbtn{width:34px;height:30px;font-size:.82em}}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Recording Superstars Podcast Grader</h1>
+<p class="subtitle">Music 8 • Mr. Burgess • STEM Middle Academy</p>
+<div class="tabs" id="viewTabs"></div>
+<div class="actions">
+<button class="export" onclick="exportCSV()">Export CSV for Schoology</button>
+<button onclick="exportJSON()">Save Backup (JSON)</button>
+<button onclick="document.getElementById('importFile').click()">Load Backup</button>
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+<button class="danger" onclick="clearGroups()">Clear All Groups</button>
+</div>
+<div id="mainContent"></div>
+</div>
+<script>
+const ROSTER=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah"];
+const CRITERIA=[{id:'content',name:'Content & Accuracy',desc:'Key facts, connections to unit themes'},{id:'discussion',name:'Discussion Quality',desc:'Natural conversation, equal contributions'},{id:'script',name:'Script & Preparation',desc:'Structure, discussion question, timing'},{id:'music',name:'Original Music',desc:'BandLab original, creative choices, fits tone'},{id:'production',name:'Production Quality',desc:'Clear audio, balanced levels, transitions'}];
+let groups=[],activeGroup=null,view='grade';
+function init(){const s=localStorage.getItem('podcastGraderV2');if(s)groups=JSON.parse(s);render()}
+function save(){localStorage.setItem('podcastGraderV2',JSON.stringify(groups))}
+function assignedStudents(){const s=new Set();groups.forEach(g=>g.members.forEach(m=>s.add(m)));return s}
+function calcAvg(scores){const v=Object.values(scores);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function studentScore(name){const g=groups.find(gr=>gr.members.includes(name));if(!g)return{scores:{},avg:null,group:null,notes:''};return{scores:g.scores,avg:calcAvg(g.scores),group:g.name,notes:g.notes}}
+function render(){renderTabs();if(view==='grade')renderGrade();else renderSheet()}
+function renderTabs(){document.getElementById('viewTabs').innerHTML=[{id:'grade',label:'Grade Groups'},{id:'sheet',label:'Spreadsheet View'}].map(t=>`<div class="tab ${view===t.id?'active':''}" onclick="switchView('${t.id}')">${t.label}</div>`).join('')}
+function switchView(v){view=v;activeGroup=null;render()}
+function esc(s){return s.replace(/'/g,"\\'")}
+function renderGrade(){
+const el=document.getElementById('mainContent');const assigned=assignedStudents();
+let h=`<div class="group-section"><h2>Groups</h2>`;
+h+=`<div class="group-name-row"><input id="newGroupName" placeholder="Group name (e.g. Team Bessie, Group 1...)" onkeydown="if(event.key==='Enter')addGroup()"><button onclick="addGroup()">+ New Group</button></div>`;
+if(!groups.length){h+=`<div class="empty">No groups yet. Create a group and assign students.</div>`}
+else{groups.forEach((g,i)=>{
+const avg=calcAvg(g.scores);const scored=Object.keys(g.scores).length;const active=activeGroup===i;
+h+=`<div class="group-card ${active?'active':''}" id="gc${i}">`;
+h+=`<div class="group-header" onclick="toggleGroup(${i})"><div><span class="gname">${g.name}</span> <span style="color:#777;font-size:.8em">(${g.members.length} students)</span></div>`;
+h+=`<div style="display:flex;align-items:center;gap:8px"><span class="gscore">${avg!==null?avg.toFixed(1):'—'}</span><span style="color:#666;font-size:.75em">${scored}/5</span><button class="del-group" onclick="event.stopPropagation();deleteGroup(${i})" title="Delete group">✕</button></div></div>`;
+if(g.members.length){h+=`<div class="group-members">${g.members.map(m=>`<span class="member-tag">${m}</span>`).join('')}</div>`}
+if(active){
+h+=`<div style="margin-top:12px;font-size:.85em;color:#888">Click students to add/remove from this group:</div><div class="student-picker">`;
+ROSTER.forEach(s=>{const inThis=g.members.includes(s);const inOther=!inThis&&assigned.has(s);const cls=inThis?'picked':inOther?'assigned':'';
+h+=`<button class="pick-btn ${cls}" onclick="${inOther?'':`toggleMember(${i},'${esc(s)}')`}" ${inOther?'disabled':''}>${s.split(',')[0]}</button>`});
+h+=`</div><div class="criteria">`;
+CRITERIA.forEach(c=>{const val=g.scores[c.id]||0;
+h+=`<div class="criterion"><div class="crit-row"><div><span class="crit-name">${c.name}</span><br><span class="crit-desc">${c.desc}</span></div><span class="crit-score">${val||'—'}</span></div>`;
+h+=`<div class="score-btns">${[1,2,3,4].map(n=>`<button class="sbtn s${n} ${val===n?'sel':''}" onclick="setScore(${i},'${c.id}',${n})">${n}</button>`).join('')}<button class="sbtn" onclick="setScore(${i},'${c.id}',0)" style="font-size:.7em;width:auto;padding:0 8px">Clear</button></div></div>`});
+h+=`</div><div class="notes-box"><label>Notes for Schoology</label><textarea id="notes${i}" oninput="saveNotes(${i})">${g.notes||''}</textarea></div>`;
+const a=calcAvg(g.scores);h+=`<div class="avg-row"><div class="avg-lbl">Group Average</div><div class="avg-num">${a!==null?a.toFixed(2):'—'}</div></div>`}
+h+=`</div>`})}
+h+=`</div>`;el.innerHTML=h}
+
+function renderSheet(){
+const el=document.getElementById('mainContent');
+let h=`<div class="group-section"><h2>All Grades — Music 8</h2><div class="sheet-wrap"><table class="sheet"><thead><tr><th>Student</th><th>Group</th>`;
+CRITERIA.forEach(c=>h+=`<th>${c.name}</th>`);h+=`<th>Average</th><th>Notes</th></tr></thead><tbody>`;
+ROSTER.forEach(name=>{const info=studentScore(name);
+h+=`<tr><td><strong>${name}</strong></td><td class="group-cell">${info.group||'<span style="color:#c41e3a">Unassigned</span>'}</td>`;
+CRITERIA.forEach(c=>{const v=info.scores[c.id];const color=v===4?'#1b7340':v===3?'#2e5090':v===2?'#b8860b':v===1?'#c41e3a':'#555';
+h+=`<td class="score-cell" style="color:${color}">${v||'—'}</td>`});
+h+=`<td class="avg-cell">${info.avg!==null?info.avg.toFixed(2):'—'}</td>`;
+h+=`<td class="notes-cell" title="${(info.notes||'').replace(/"/g,'&quot;')}">${info.notes||''}</td></tr>`});
+h+=`</tbody></table></div></div>`;el.innerHTML=h}
+
+function addGroup(){const input=document.getElementById('newGroupName');const name=input.value.trim();if(!name)return;groups.push({name,members:[],scores:{},notes:''});activeGroup=groups.length-1;input.value='';save();render()}
+function toggleGroup(i){activeGroup=activeGroup===i?null:i;render();if(activeGroup!==null)document.getElementById('gc'+i)?.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function deleteGroup(i){if(!confirm(`Delete group "${groups[i].name}"?`))return;groups.splice(i,1);if(activeGroup===i)activeGroup=null;else if(activeGroup>i)activeGroup--;save();render()}
+function toggleMember(gi,student){const g=groups[gi];const idx=g.members.indexOf(student);if(idx>=0)g.members.splice(idx,1);else g.members.push(student);save();render()}
+function setScore(gi,cid,val){if(val===0)delete groups[gi].scores[cid];else groups[gi].scores[cid]=val;save();render()}
+function saveNotes(gi){groups[gi].notes=document.getElementById('notes'+gi).value;save()}
+function exportCSV(){let csv='Student,Group,Content & Accuracy,Discussion Quality,Script & Preparation,Original Music,Production Quality,Average,Notes\n';
+ROSTER.forEach(name=>{const info=studentScore(name);const scores=CRITERIA.map(c=>info.scores[c.id]||'');const notes=(info.notes||'').replace(/"/g,'""').replace(/\n/g,' ');
+csv+=`"${name}","${info.group||''}",${scores.join(',')},${info.avg!==null?info.avg.toFixed(2):''},"${notes}"\n`});
+const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`podcast_grades_music8_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
+function exportJSON(){const blob=new Blob([JSON.stringify(groups,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`podcast_grades_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
+function importJSON(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(confirm('Replace all current data?')){groups=d;activeGroup=null;save();render()}}catch(err){alert('Invalid file.')}};r.readAsText(file);e.target.value=''}
+function clearGroups(){if(!confirm('Delete ALL groups and grades?'))return;if(!confirm('Really sure?'))return;groups=[];activeGroup=null;localStorage.removeItem('podcastGraderV2');save();render()}
+init();
+</script>
+</body>
+</html>
