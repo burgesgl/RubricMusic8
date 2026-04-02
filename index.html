@@ -3,253 +3,321 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Podcast Grader — Music 8</title>
+<title>Music Grader — Mr. Burgess</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
-.wrap{max-width:1200px;margin:0 auto;padding:16px}
-h1{font-size:1.4em;color:#fff;margin-bottom:2px}
-.sub{color:#e8740c;font-size:.82em;margin-bottom:14px}
-.bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.bar button{padding:7px 14px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.82em;transition:.2s}
+.wrap{max-width:100%;margin:0 auto;padding:12px}
+h1{font-size:1.3em;color:#fff;margin-bottom:2px}
+.sub{color:#e8740c;font-size:.78em;margin-bottom:10px}
+.nav{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;border-bottom:2px solid #2a2a42;padding-bottom:8px}
+.nav-btn{padding:7px 14px;background:#1a1a2e;border:2px solid #2a2a42;border-bottom:none;border-radius:8px 8px 0 0;cursor:pointer;font-size:.82em;color:#888;transition:.15s}
+.nav-btn:hover{color:#fff;border-color:#555}
+.nav-btn.active{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.stabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.stab{padding:5px 12px;background:#12121f;border:2px solid #333;border-radius:6px;cursor:pointer;font-size:.78em;color:#888;transition:.12s}
+.stab:hover{border-color:#e8740c;color:#fff}
+.stab.active{background:#1b7340;border-color:#1b7340;color:#fff}
+.bar{display:flex;gap:5px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.bar button{padding:6px 12px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.78em;transition:.15s}
 .bar button:hover{border-color:#e8740c;color:#fff}
-.bar button.go{background:#e8740c;border-color:#e8740c;color:#fff;font-weight:bold;font-size:.9em}
+.bar button.go{background:#e8740c;border-color:#e8740c;color:#fff;font-weight:bold}
 .bar button.go:hover{background:#c55d0a}
 .bar button.ex{border-color:#1b7340}.bar button.ex:hover{background:#1b7340;color:#fff}
 .bar button.dn{border-color:#c41e3a}.bar button.dn:hover{background:#c41e3a;color:#fff}
-.sw{overflow-x:auto}
-table.sh{border-collapse:collapse;width:100%;font-size:.82em}
-table.sh th{background:#1a1a2e;color:#e8740c;padding:8px 9px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0;z-index:2}
-table.sh td{padding:7px 9px;border:1px solid #2a2a42;background:#12121f}
+.bar input{padding:6px 10px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.82em;width:180px}
+.bar input:focus{outline:none;border-color:#e8740c}
+.sw{overflow-x:auto;margin-bottom:16px}
+table.sh{border-collapse:collapse;font-size:.76em;white-space:nowrap}
+table.sh th{background:#1a1a2e;color:#e8740c;padding:5px 6px;text-align:center;border:1px solid #2a2a42;position:sticky;top:0;z-index:2}
+table.sh th:first-child{text-align:left;position:sticky;left:0;z-index:3;background:#1a1a2e}
+table.sh td{padding:4px 6px;border:1px solid #2a2a42;background:#12121f;text-align:center}
+table.sh td:first-child{text-align:left;font-weight:bold;position:sticky;left:0;z-index:1;background:#12121f}
 table.sh tr:hover td{background:#1a1a2e}
-table.sh .sc{text-align:center;font-weight:bold}
-table.sh .av{color:#e8740c;font-weight:bold;text-align:center}
-table.sh .nt{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#888;font-size:.9em}
-table.sh .gr{color:#6d2e46;font-size:.88em}
-table.sh .un{color:#c41e3a;font-style:italic;font-size:.85em}
-.el{color:#e8740c;cursor:pointer;text-decoration:underline;font-size:.82em}.el:hover{color:#fff}
-
-/* MODAL */
-.ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:100;justify-content:center;align-items:flex-start;padding:24px 12px;overflow-y:auto}
+table.sh tr:hover td:first-child{background:#1a1a2e}
+table.sh .hdr{font-size:.72em;color:#aaa;font-weight:normal;display:block}
+table.sh .el{color:#e8740c;cursor:pointer;text-decoration:underline}.el:hover{color:#fff}
+table.sh .gr{color:#6d2e46;font-size:.85em}
+/* Modal */
+.ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:100;justify-content:center;align-items:flex-start;padding:20px 10px;overflow-y:auto}
 .ov.open{display:flex}
-.mod{background:#1a1a2e;border:2px solid #e8740c;border-radius:14px;width:100%;max-width:740px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.mh{background:#0f0f1a;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2a2a42}
-.mh h2{font-size:1.05em;color:#fff}
-.mh .cl{background:none;border:none;color:#888;font-size:1.4em;cursor:pointer}.mh .cl:hover{color:#c41e3a}
-.mb{padding:16px 18px}
-
-.sl{font-size:.86em;color:#e8740c;font-weight:bold;margin-bottom:5px}
-.gi{width:100%;padding:8px 11px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.9em;margin-bottom:12px}
+.mod{background:#1a1a2e;border:2px solid #e8740c;border-radius:12px;width:100%;max-width:760px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.6)}
+.mh{background:#0f0f1a;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #2a2a42}
+.mh h2{font-size:1em;color:#fff}
+.mh .cl{background:none;border:none;color:#888;font-size:1.3em;cursor:pointer}.mh .cl:hover{color:#c41e3a}
+.mb{padding:14px 16px;max-height:80vh;overflow-y:auto}
+.sl{font-size:.84em;color:#e8740c;font-weight:bold;margin-bottom:4px}
+.gi{width:100%;padding:7px 10px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.88em;margin-bottom:10px}
 .gi:focus{outline:none;border-color:#e8740c}
-.pl{font-size:.8em;color:#777;margin-bottom:4px}
-.pks{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
-.pk{padding:5px 10px;border:2px solid #333;background:#12121f;color:#aaa;border-radius:5px;cursor:pointer;font-size:.8em;transition:.12s}
+.pl{font-size:.78em;color:#777;margin-bottom:4px}
+.pks{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.pk{padding:4px 9px;border:2px solid #333;background:#12121f;color:#aaa;border-radius:5px;cursor:pointer;font-size:.78em;transition:.1s}
 .pk:hover{border-color:#e8740c;color:#fff}
 .pk.in{background:#6d2e46;border-color:#6d2e46;color:#fff}
 .pk.tk{background:#222;border-color:#444;color:#555;cursor:not-allowed;text-decoration:line-through}
-
-/* RUBRIC TABLE */
-.rt-title{font-size:.92em;font-weight:bold;color:#fff;margin:8px 0 10px;padding-top:10px;border-top:1px solid #2a2a42}
-.rt{width:100%;border-collapse:collapse;font-size:.78em;margin-bottom:6px}
-.rt th{background:#12121f;color:#e8740c;padding:7px 6px;text-align:center;border:1px solid #2a2a42;font-size:.9em}
-.rt th:first-child{text-align:left;width:110px}
-.rt td{padding:6px;border:1px solid #2a2a42;vertical-align:top;text-align:center;color:#bbb;line-height:1.25}
-.rt td:first-child{text-align:left;font-weight:bold;color:#ccc;background:#0f0f1a}
-.rt td.pick{cursor:pointer;transition:.12s;position:relative}
+.pk.sel{background:#2e5090;border-color:#2e5090;color:#fff}
+.rt-title{font-size:.85em;font-weight:bold;color:#fff;margin:6px 0 8px;padding-top:8px;border-top:1px solid #2a2a42}
+.rt{width:100%;border-collapse:collapse;font-size:.72em;margin-bottom:4px}
+.rt th{background:#12121f;color:#e8740c;padding:5px 4px;text-align:center;border:1px solid #2a2a42}
+.rt th:first-child{text-align:left;width:90px}
+.rt td{padding:4px;border:1px solid #2a2a42;vertical-align:top;text-align:center;color:#bbb;line-height:1.2}
+.rt td:first-child{text-align:left;font-weight:bold;color:#ccc;cursor:default;background:#0f0f1a;font-size:.9em}
+.rt td.pick{cursor:pointer;transition:.1s}
 .rt td.pick:hover{background:#1e1e35;color:#fff}
 .rt td.pick.s4{background:#1b7340;color:#fff}
 .rt td.pick.s3{background:#2e5090;color:#fff}
 .rt td.pick.s2{background:#6b5a0b;color:#fff}
 .rt td.pick.s1{background:#8b1a2b;color:#fff}
-
-/* MIDPOINT SLIDER ROW */
-.mp-row{display:flex;align-items:center;gap:8px;margin-top:4px;margin-bottom:10px;padding:6px 10px;background:#0f0f1a;border-radius:6px}
-.mp-row .mp-label{font-size:.8em;color:#888;white-space:nowrap}
-.mp-row .mp-val{font-size:1.1em;font-weight:bold;color:#e8740c;min-width:32px;text-align:center}
-.mp-row input[type=range]{flex:1;accent-color:#e8740c;cursor:pointer}
-.mp-row .mp-clear{background:none;border:1px solid #444;color:#888;border-radius:4px;padding:2px 8px;font-size:.75em;cursor:pointer}
-.mp-row .mp-clear:hover{border-color:#c41e3a;color:#c41e3a}
-
-.nm{margin-bottom:12px}
-.nm label{font-size:.8em;color:#666;display:block;margin-bottom:2px}
-.nm textarea{width:100%;min-height:55px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:7px;font-family:inherit;font-size:.83em;resize:vertical}
+.rt td.pick.s0{background:#442200;color:#fff}
+.mp{display:flex;align-items:center;gap:6px;margin:2px 0 5px;padding:3px 8px;background:#0f0f1a;border-radius:5px;font-size:.8em}
+.mp .lbl{color:#888;white-space:nowrap;font-size:.82em}
+.mp .val{font-weight:bold;color:#e8740c;min-width:28px;text-align:center}
+.mp input[type=range]{flex:1;accent-color:#e8740c;cursor:pointer}
+.mp .clr{background:none;border:1px solid #444;color:#888;border-radius:3px;padding:1px 6px;font-size:.72em;cursor:pointer}
+.mp .clr:hover{border-color:#c41e3a;color:#c41e3a}
+.nm{margin-bottom:10px}
+.nm label{font-size:.78em;color:#666;display:block;margin-bottom:2px}
+.nm textarea{width:100%;min-height:45px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:6px;font-family:inherit;font-size:.8em;resize:vertical}
 .nm textarea:focus{outline:none;border-color:#e8740c}
-.ma{text-align:center;padding:8px;background:#0f0f1a;border-radius:6px;margin-bottom:12px}
-.ma .big{font-size:1.6em;font-weight:bold;color:#e8740c}
-.ma .sm{font-size:.7em;color:#666}
-.mf{display:flex;gap:8px;justify-content:flex-end}
-.mf button{padding:8px 18px;border-radius:6px;cursor:pointer;font-size:.88em;font-weight:bold;border:none}
+.ma{text-align:center;padding:5px;background:#0f0f1a;border-radius:6px;margin-bottom:10px}
+.ma .big{font-size:1.4em;font-weight:bold;color:#e8740c}
+.ma .sm{font-size:.65em;color:#666}
+.mf{display:flex;gap:6px;justify-content:flex-end}
+.mf button{padding:7px 16px;border-radius:6px;cursor:pointer;font-size:.82em;font-weight:bold;border:none}
 .mf .ca{background:#333;color:#aaa}.mf .ca:hover{background:#444;color:#fff}
 .mf .sv{background:#e8740c;color:#fff}.mf .sv:hover{background:#c55d0a}
 .mf .dl{background:#c41e3a;color:#fff;margin-right:auto}.mf .dl:hover{background:#a01530}
-
-@media(max-width:600px){.wrap{padding:10px}}
+.scale-sel{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.ss-btn{padding:5px 10px;border:2px solid #333;background:#12121f;color:#aaa;border-radius:5px;cursor:pointer;font-size:.78em}
+.ss-btn:hover{border-color:#e8740c;color:#fff}
+.ss-btn.active{background:#1b7340;border-color:#1b7340;color:#fff}
+.col-hdr{writing-mode:vertical-lr;transform:rotate(180deg);font-size:.7em;min-height:80px}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>Recording Superstars Podcast Grader</h1>
-<p class="sub">Music 8 &bull; Mr. Burgess &bull; STEM Middle Academy</p>
-<div class="bar">
-<button class="go" onclick="openNew()">+ Grade a Group</button>
-<button class="ex" onclick="exportCSV()">Export CSV</button>
-<button onclick="exportJSON()">Save Backup</button>
-<button onclick="document.getElementById('imp').click()">Load Backup</button>
-<input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
-<button class="dn" onclick="clearAll()">Clear All</button>
+<h1>Music Department Grader</h1>
+<p class="sub">Mr. Burgess &bull; STEM Middle Academy</p>
+<div class="nav" id="nav"></div>
+<div id="pageArea"></div>
 </div>
-<div class="sw" id="sa"></div>
-</div>
-
 <div class="ov" id="ov" onclick="if(event.target===this)closeM()">
-<div class="mod">
-<div class="mh"><h2 id="mt">Grade Group</h2><button class="cl" onclick="closeM()">&times;</button></div>
-<div class="mb" id="mb"></div>
+<div class="mod"><div class="mh"><h2 id="mt">Grade</h2><button class="cl" onclick="closeM()">&times;</button></div><div class="mb" id="mb"></div></div>
 </div>
-</div>
-
 <script>
-const R=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah"];
-const CR=[
-  {id:'content',name:'Content & Accuracy',
-   d4:'All key facts accurate; original connections to technology, race, or power themes',
-   d3:'Key facts accurate; connects to at least one unit theme',
-   d2:'Some facts accurate but surface-level; limited theme connection',
-   d1:'Significant errors or missing info; no theme connection'},
-  {id:'discussion',name:'Discussion Quality',
-   d4:'Natural, engaging; all members contribute equally; smooth transitions',
-   d3:'Clear conversation; all contribute; minor awkward moments',
-   d2:'Scripted/stilted; uneven contributions; some disorganization',
-   d1:'Disconnected; one person dominates; no structure'},
-  {id:'script',name:'Script & Preparation',
-   d4:'Thorough prep; clear structure; discussion Q explored in depth; 5\u20137 min',
-   d3:'Clear structure; discussion Q addressed; close to 5\u20137 min',
-   d2:'Incomplete structure; Q mentioned not explored; timing off',
-   d1:'No script or minimal prep; Q not addressed; way off time'},
-  {id:'music',name:'Original Music',
-   d4:'Polished BandLab original; fits tone; intentional creative choices',
-   d3:'BandLab original; appropriate; basic creative choices',
-   d2:'Music present but minimal (single unedited loop); limited creativity',
-   d1:'No original music or incomplete'},
-  {id:'production',name:'Production Quality',
-   d4:'Clear audio; balanced levels; smooth transitions; professional feel',
-   d3:'Mostly clear; functional transitions; minor issues',
-   d2:'Noticeable issues (uneven levels, noise); rough transitions',
-   d1:'Hard to hear/understand; no editing evident'}
+// ROSTERS
+const MUSIC8=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah","Student, Tester"];
+const B6A=["Ahmed, Fartuma","Burney-Nash, Rubyrose","Castillo Cruz, Yariel","Feliciano, Sophia","Fernandez, Janiel","Gutierrez Perez, Melany","Henderson-Maldonado, Neyliann","Lin-Weinheimer, Kathleen","Lopez Mejia, John","Lopez Robles, Shayrimar","Pastrana Rodriguez, Yael","Patel, Pihu","Peralta Lozada, Bernardo","Perez, Serenity","Redding, Khale","Rodriguez, Leijaniz","Rudd, Sharilyn","Ruiz Diaz, Natanael","Santiago, Joshua","Semprit, Nehemiah","Sims-Gamble, Carter","Smith, Joi","Swasey, Mya","Student, Tester"];
+const B6B=["Bousquet, John Alexander","Cordero-Laboy, Dylan","Davila, Edrian","Dickey, Lola","Lopez, Zianely","Luna, Ariella","Maddox, Amayah","Marrero Olivo, Derek","O'Connell, Liam","Oquendo, Aalexander","Rufino, Edynn","Sunar, Naraj","Thapa, Penuel","Timori, Bibi","Torres Jr, Joshua","Velasquez, Jasmine","Zian, Mina","Student, Tester"];
+const B7=["Allende, Nyesha","Arbow, Hadija","Becker, Justin","Davis, Keyshawn","Delgado, Eli","Edwards, Ricardo","Ferguson, Lance","Ferguson, Liam","Fountaine, Anastasia","Gonzalez Morales, Eddie","Grant, Farha","Horta Rodriguez, Khrizpaul","Martinez-Gedeon, Lailah","Mateo, Pedro","Medina Torres, Joshua","Navarro Gonzalez, Jacob","Rivera Cardona, Rafael","Robinson, Danika","Roches, Jariah","Rodriguez Vazquez, Dhlyan","Rosa, Kaylen","Santiago Ramos, Adrielyz","Williams, Ahmeir","Williams, Jehvon","Student, Tester"];
+const B8=["Cohill, Ramsey","Colon, Christian","Cox, Eboni","Fraichard-Sanchez, Nevaeh","Khanal, Richa","Latney, Emily","Malave, Mikaela","Marte, Jailyn","Mcdonald, Brianna","Mejia Cruz, Yanelis","Montanez, Messiah","Nascimento De Sa, Joao Pedro","Nuri, Jaid'n","Ramos, Michael","Roches, Jezariah","Santiago, Keylianis","Tamang, Sonu","Student, Tester"];
+
+// RUBRICS
+const PC=[{id:'content',name:'Content & Accuracy',d4:'All facts accurate; original theme connections',d3:'Facts accurate; connects to one theme',d2:'Surface-level; limited connection',d1:'Errors or missing; no connection'},{id:'discussion',name:'Discussion Quality',d4:'Natural; all contribute; smooth',d3:'Clear; all contribute; minor issues',d2:'Stilted; uneven; disorganized',d1:'Disconnected; one dominates'},{id:'script',name:'Script & Prep',d4:'Thorough; clear structure; 5-7 min',d3:'Clear structure; close to target',d2:'Incomplete; timing off',d1:'Minimal prep; way off'},{id:'music',name:'Original Music',d4:'Polished BandLab; intentional choices',d3:'BandLab original; basic choices',d2:'Minimal single loop',d1:'No original music'},{id:'production',name:'Production',d4:'Clear; balanced; professional',d3:'Mostly clear; minor issues',d2:'Noticeable issues; rough',d1:'Hard to hear; no editing'}];
+const PL=[{id:'tone',name:'Tone/Breath',d4:'Always mature focused tone',d3:'Mature; thin only in extremes',d2:'Sometimes mature; thin in extremes',d1:'Occasionally mature; consistently thin',d0:'Rarely mature; always thin'},{id:'pitch',name:'Pitch/Intonation',d4:'Always accurate; very secure',d3:'Accurate w/ isolated error; rare lapses',d2:'Mostly accurate; isolated errors',d1:'Repeated errors; sometimes accurate',d0:'Seldom secure; wrong fingerings'},{id:'artic',name:'Articulation',d4:'Always correct technique/style',d3:'Nearly always correct',d2:'Sometimes correct; consistent flaws',d1:'Occasionally correct; consistent flaws',d0:'No control evident'},{id:'rhythm',name:'Rhythm/Pulse',d4:'Always accurate; secure pulse',d3:'Nearly always; minor errors',d2:'Usually; common errors; erratic',d1:'Sometimes; frequently erratic',d0:'Seldom accurate; unsteady'},{id:'phrase',name:'Phrasing',d4:'Consistently uses dynamics',d3:'Uses dynamics; occasional lapses',d2:'Sometimes; consistent lapses',d1:'Effort but control prevents it',d0:'No phrase shape'}];
+const SCC=[{id:'tone',name:'Tone',d4:'Excellent mature characteristic',d3:'Good w/ minor inconsistencies',d2:'Thin/unfocused some registers',d1:'Weak airy strained'},{id:'tech',name:'Technique',d4:'All notes correct',d3:'1-2 wrong notes',d2:'3-4 wrong notes',d1:'Many wrong; unclear'},{id:'tempo',name:'Tempo',d4:'Steady; with metronome',d3:'Generally steady; minor fluctuations',d2:'Rushing/dragging; inconsistent',d1:'Cannot maintain beat'},{id:'stage',name:'Stage',d4:'Stage 3: Qtr+two 8ths',d3:'Stage 2: Half+two qtrs',d2:'Stage 1: All halves',d1:'Unable to perform'},{id:'oct',name:'Octaves',d4:'2+ octaves correct',d3:'1 octave correct',d2:'Partial (5+ notes)',d1:'Less than 5 notes'}];
+const SCALES=["F Major","B\u266D Major","E\u266D Major","A\u266D Major","D\u266D Major","G Major","C Major","F Chromatic","B\u266D Chromatic"];
+
+// PAGE CONFIG
+// Podcast pages: group-based, single rubric per group, members get same score
+// Band pages: multi-assessment — each "assessment" is a named column; per student per assessment
+const SECS=[{id:'6a',label:'Band 6A',roster:B6A},{id:'6b',label:'Band 6B',roster:B6B},{id:'7',label:'Band 7',roster:B7},{id:'8',label:'Band 8',roster:B8}];
+const PAGES=[
+  {id:'superstars',label:'Superstars Podcast',type:'podcast',roster:MUSIC8,crit:PC,hasZero:false},
+  {id:'rebellion',label:'Art of Rebellion',type:'podcast',roster:MUSIC8,crit:PC,hasZero:false},
+  {id:'playing',label:'Band Playing Test',type:'multi',sections:SECS,crit:PL,hasZero:true},
+  {id:'scales',label:'Band Scales',type:'multi',sections:SECS,crit:SCC,hasZero:false}
 ];
 
-let G=[],ei=null,tmp={n:'',m:[],sc:{},nt:''};
-function init(){const s=localStorage.getItem('pg5');if(s)G=JSON.parse(s);dS()}
-function sv(){localStorage.setItem('pg5',JSON.stringify(G))}
-function asgd(ex){const s=new Set();G.forEach((g,i)=>{if(i!==ex)g.m.forEach(x=>s.add(x))});return s}
+let cp='superstars',cs=null;
+// DB structure:
+// podcast: DB[pageId] = [{n:'group name', m:['student',...], sc:{critId:val}, nt:''}]
+// multi:   DB[pageId][sectionId] = [{aname:'Assessment Name', entries:{studentName:{sc:{},nt:''}}}]
+let DB={},ei=null,tmp={},curAsmtIdx=null;
+
+function init(){const s=localStorage.getItem('mg5');if(s)DB=JSON.parse(s);render()}
+function sv(){localStorage.setItem('mg5',JSON.stringify(DB))}
+function pg(){return PAGES.find(p=>p.id===cp)}
+function getRoster(){const p=pg();if(p.sections){const s=cs||p.sections[0].id;return p.sections.find(x=>x.id===s).roster}return p.roster}
+function getStore(){const p=pg();if(p.type==='podcast'){if(!DB[p.id])DB[p.id]=[];return DB[p.id]}
+if(!DB[p.id])DB[p.id]={};const sid=cs||p.sections[0].id;if(!DB[p.id][sid])DB[p.id][sid]=[];return DB[p.id][sid]}
 function avg(sc){const v=Object.values(sc);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
-function inf(nm){const g=G.find(x=>x.m.includes(nm));if(!g)return{sc:{},av:null,gn:null,nt:''};return{sc:g.sc,av:avg(g.sc),gn:g.n,nt:g.nt}}
-function scColor(v){if(!v)return'#444';if(v>=3.5)return'#1b7340';if(v>=2.5)return'#2e5090';if(v>=1.5)return'#b8860b';return'#c41e3a'}
+function scC(v){if(v===undefined||v===null)return'#444';if(v>=3.5)return'#1b7340';if(v>=2.5)return'#2e5090';if(v>=1.5)return'#b8860b';if(v>=0.5)return'#c41e3a';return'#660'}
+function asgd(st,ex){const s=new Set();st.forEach((g,i)=>{if(i!==ex)(g.m||[]).forEach(x=>s.add(x))});return s}
+function esc(s){return s.replace(/'/g,"\\'")}
 
-function dS(){
-const el=document.getElementById('sa');
+function render(){document.getElementById('nav').innerHTML=PAGES.map(p=>`<div class="nav-btn ${cp===p.id?'active':''}" onclick="sp('${p.id}')">${p.label}</div>`).join('');dp()}
+function sp(id){cp=id;const p=pg();cs=p.sections?p.sections[0].id:null;render()}
+function ss(id){cs=id;dp()}
+
+function dp(){
+const p=pg(),el=document.getElementById('pageArea');let h='';
+if(p.sections){if(!cs)cs=p.sections[0].id;h+=`<div class="stabs">${p.sections.map(s=>`<div class="stab ${cs===s.id?'active':''}" onclick="ss('${s.id}')">${s.label} (${s.roster.length})</div>`).join('')}</div>`}
+if(p.type==='podcast'){
+h+=`<div class="bar"><button class="go" onclick="oN()">+ Grade a Group</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
+h+=`<div class="sw">${bSPodcast()}</div>`;
+} else {
+h+=`<div class="bar"><button class="go" onclick="newAsmt()">+ New Assessment</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
+h+=`<div class="sw">${bSMulti()}</div>`;
+}
+el.innerHTML=h}
+
+// === PODCAST SPREADSHEET ===
+function bSPodcast(){
+const st=getStore(),ro=getRoster(),cr=pg().crit;
 let h=`<table class="sh"><thead><tr><th>Student</th><th>Group</th>`;
-CR.forEach(c=>h+=`<th>${c.name}</th>`);
-h+=`<th>Avg</th><th>Notes</th></tr></thead><tbody>`;
-R.forEach(nm=>{
-const d=inf(nm);
-h+=`<tr><td><strong>${nm}</strong></td>`;
-h+=`<td class="gr">${d.gn?`<span class="el" onclick="eG('${d.gn.replace(/'/g,"\\'")}')">${d.gn}</span>`:'<span class="un">Unassigned</span>'}</td>`;
-CR.forEach(c=>{const v=d.sc[c.id];
-h+=`<td class="sc" style="color:${scColor(v)}">${v||'\u2014'}</td>`});
-h+=`<td class="av">${d.av!==null?d.av.toFixed(2):'\u2014'}</td>`;
-h+=`<td class="nt" title="${(d.nt||'').replace(/"/g,'&quot;')}">${d.nt||''}</td></tr>`});
-h+=`</tbody></table>`;
-el.innerHTML=h;
+cr.forEach(c=>h+=`<th>${c.name}</th>`);h+=`<th>Avg</th><th>Notes</th></tr></thead><tbody>`;
+ro.forEach(nm=>{const g=st.find(x=>x.m&&x.m.includes(nm));const sc=g?g.sc:{};const a=g?avg(g.sc):null;const nt=g?g.nt:'';
+h+=`<tr><td>${nm}</td><td class="gr">${g?`<span class="el" onclick="eE('${esc(g.n)}')">${g.n}</span>`:'\u2014'}</td>`;
+cr.forEach(c=>{const v=sc[c.id];h+=`<td style="color:${scC(v)};font-weight:bold">${v?v.toFixed(1):'\u2014'}</td>`});
+h+=`<td style="color:#e8740c;font-weight:bold">${a!==null?a.toFixed(2):'\u2014'}</td><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#777;font-size:.88em" title="${(nt||'').replace(/"/g,'&quot;')}">${nt||''}</td></tr>`});
+return h+`</tbody></table>`}
+
+// === MULTI-ASSESSMENT SPREADSHEET ===
+function bSMulti(){
+const st=getStore(),ro=getRoster(),cr=pg().crit;
+// Each entry in st is: {aname:'...', entries:{studentName:{sc:{},nt:''}}}
+if(!st.length) return `<table class="sh"><thead><tr><th>Student</th><th style="color:#555">No assessments yet. Click "+ New Assessment" to start.</th></tr></thead></table>`;
+// Columns: Student | [Asmt1 Avg] | [Asmt2 Avg] | ...
+let h=`<table class="sh"><thead><tr><th>Student</th>`;
+st.forEach((a,i)=>h+=`<th><span class="el" onclick="editAsmt(${i})">${a.aname}</span></th>`);
+h+=`</tr></thead><tbody>`;
+ro.forEach(nm=>{
+h+=`<tr><td>${nm}</td>`;
+st.forEach(a=>{
+const e=a.entries&&a.entries[nm];
+const sc=e?e.sc:{};const av=e?avg(e.sc):null;
+h+=`<td style="color:${scC(av)};font-weight:bold">${av!==null?av.toFixed(2):'\u2014'}</td>`;
+});
+h+=`</tr>`});
+return h+`</tbody></table>`}
+
+// === PODCAST MODAL ===
+function oN(){const p=pg();if(p.type==='podcast'){ei=null;tmp={n:'',m:[],sc:{},nt:''};document.getElementById('mt').textContent='Grade a Group';dMPod();document.getElementById('ov').classList.add('open')}else newAsmt()}
+function eE(gn){const st=getStore();const i=st.findIndex(g=>g.n===gn);if(i<0)return;ei=i;const g=st[i];tmp={n:g.n,m:[...g.m],sc:{...g.sc},nt:g.nt||''};document.getElementById('mt').textContent='Edit: '+g.n;dMPod();document.getElementById('ov').classList.add('open')}
+function closeM(){document.getElementById('ov').classList.remove('open');ei=null;curAsmtIdx=null}
+
+function dMPod(){
+const st=getStore(),cr=pg().crit,el=document.getElementById('mb'),tk=asgd(st,ei);
+let h=`<div class="sl">Group Name</div><input class="gi" id="mgn" value="${tmp.n}" oninput="tmp.n=this.value" placeholder="Group name...">`;
+h+=`<div class="pl">Click to assign/remove:</div><div class="pks">`;
+getRoster().forEach(s=>{const me=tmp.m.includes(s);const ot=!me&&tk.has(s);h+=`<button class="pk ${me?'in':ot?'tk':''}" ${ot?'disabled':''} onclick="${ot?'':`mt('${esc(s)}')`}">${s}</button>`});
+h+=`</div>`;h+=buildRubric(cr,pg().hasZero);
+h+=`<div class="nm"><label>Notes</label><textarea id="mnt" oninput="tmp.nt=this.value">${tmp.nt||''}</textarea></div>`;
+const a=avg(tmp.sc);h+=`<div class="ma"><div class="sm">Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
+h+=`<div class="mf">`;if(ei!==null)h+=`<button class="dl" onclick="delPod()">Delete</button>`;
+h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="savePod()">Save</button></div>`;
+el.innerHTML=h}
+
+function mt(s){const i=tmp.m.indexOf(s);if(i>=0)tmp.m.splice(i,1);else tmp.m.push(s);dMPod()}
+function savePod(){if(!tmp.n.trim()){alert('Group name.');return}if(!tmp.m.length){alert('Assign students.');return}
+const st=getStore();const o={n:tmp.n.trim(),m:[...tmp.m],sc:{...tmp.sc},nt:tmp.nt};if(ei!==null)st[ei]=o;else st.push(o);sv();dp();closeM()}
+function delPod(){if(!confirm('Delete?'))return;getStore().splice(ei,1);sv();dp();closeM()}
+
+// === MULTI-ASSESSMENT MODAL ===
+function newAsmt(){
+curAsmtIdx=null;
+tmp={aname:'',entries:{}};
+document.getElementById('mt').textContent='New Assessment';
+dMMulti();document.getElementById('ov').classList.add('open')
+}
+function editAsmt(idx){
+curAsmtIdx=idx;const st=getStore();const a=st[idx];
+tmp={aname:a.aname,entries:JSON.parse(JSON.stringify(a.entries||{}))};
+document.getElementById('mt').textContent='Edit: '+a.aname;
+// Pick first student that has data, or null
+tmp._curStudent=null;
+dMMulti();document.getElementById('ov').classList.add('open')
 }
 
-function openNew(){ei=null;tmp={n:'',m:[],sc:{},nt:''};document.getElementById('mt').textContent='Grade a Group';dM();document.getElementById('ov').classList.add('open')}
-function eG(gn){const i=G.findIndex(g=>g.n===gn);if(i<0)return;ei=i;const g=G[i];tmp={n:g.n,m:[...g.m],sc:{...g.sc},nt:g.nt||''};document.getElementById('mt').textContent='Edit: '+g.n;dM();document.getElementById('ov').classList.add('open')}
-function closeM(){document.getElementById('ov').classList.remove('open');ei=null}
-
-function dM(){
-const el=document.getElementById('mb');const tk=asgd(ei);
-let h=`<div class="sl">Group Name</div><input class="gi" id="mgn" value="${tmp.n}" oninput="tmp.n=this.value" placeholder="e.g. Team Bessie, Group 1...">`;
-h+=`<div class="pl">Click names to assign/remove:</div><div class="pks">`;
-R.forEach(s=>{const me=tmp.m.includes(s);const oth=!me&&tk.has(s);
-h+=`<button class="pk ${me?'in':oth?'tk':''}" ${oth?'disabled':''} onclick="${oth?'':`mt('${s.replace(/'/g,"\\'")}')`}">${s}</button>`});
+function dMMulti(){
+const cr=pg().crit,el=document.getElementById('mb'),ro=getRoster();
+let h=`<div class="sl">Assessment Name</div><input class="gi" value="${tmp.aname}" oninput="tmp.aname=this.value" placeholder="e.g. Playing Test 1, B♭ Scale, Concert Rep...">`;
+h+=`<div class="sl">Select Student to Grade</div><div class="pks">`;
+ro.forEach(s=>{const has=tmp.entries[s]&&Object.keys(tmp.entries[s].sc||{}).length;
+const sel=tmp._curStudent===s;
+h+=`<button class="pk ${sel?'sel':has?'in':''}" onclick="pickMS('${esc(s)}')">${s.split(',')[0]}${has?' \u2713':''}</button>`});
 h+=`</div>`;
-
-// RUBRIC TABLE
-h+=`<div class="rt-title">Click a column to set the base score, then fine-tune with the slider</div>`;
-h+=`<table class="rt"><thead><tr><th></th><th>4 \u2014 Exemplary</th><th>3 \u2014 Proficient</th><th>2 \u2014 Developing</th><th>1 \u2014 Beginning</th></tr></thead><tbody>`;
-CR.forEach(c=>{
-const v=tmp.sc[c.id]||0;
-const base=v?Math.ceil(v-0.001):0; // which column is highlighted: 4 if 3.5-4, 3 if 2.5-3.4, etc
-h+=`<tr><td>${c.name}</td>`;
-[4,3,2,1].forEach(n=>{
-// highlight the column if the score falls in that range (n-1 < v <= n), or exact match
-const hi=(v>0 && Math.ceil(v-0.001)===n)?` s${n}`:'';
-h+=`<td class="pick${hi}" onclick="mBase('${c.id}',${n})">${c['d'+n]}</td>`;
-});
-h+=`</tr>`;
-// Slider row for fine-tuning
-if(v>0){
-const lo=Math.max(1,Math.floor(v)-0.9);
-const rMin=(base===1)?1:(base-1+0.1);
-const rMax=base;
-h+=`<tr><td colspan="5"><div class="mp-row"><span class="mp-label">${c.name}:</span><span class="mp-val" id="mpv_${c.id}">${v.toFixed(1)}</span>`;
-h+=`<input type="range" min="${rMin}" max="${rMax}" step="0.1" value="${v}" oninput="mSlide('${c.id}',this.value)">`;
-h+=`<button class="mp-clear" onclick="mClear('${c.id}')">Clear</button></div></td></tr>`;
+if(tmp._curStudent){
+const sn=tmp._curStudent;if(!tmp.entries[sn])tmp.entries[sn]={sc:{},nt:''};
+const se=tmp.entries[sn];
+h+=`<div class="rt-title">Rubric for ${sn}</div>`;
+// Build rubric using se.sc as the score source
+h+=buildRubricFor(cr,pg().hasZero,sn);
+h+=`<div class="nm"><label>Notes for ${sn.split(',')[0]}</label><textarea oninput="tmp.entries['${esc(sn)}'].nt=this.value">${se.nt||''}</textarea></div>`;
+const a=avg(se.sc);h+=`<div class="ma"><div class="sm">${sn.split(',')[0]} Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
 }
-});
-h+=`</tbody></table>`;
+h+=`<div class="mf">`;if(curAsmtIdx!==null)h+=`<button class="dl" onclick="delAsmt()">Delete Assessment</button>`;
+h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveAsmt()">Save</button></div>`;
+el.innerHTML=h}
 
-h+=`<div class="nm"><label>Notes for Schoology</label><textarea id="mnt" oninput="tmp.nt=this.value">${tmp.nt}</textarea></div>`;
-const a=avg(tmp.sc);
-h+=`<div class="ma"><div class="sm">Group Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
-h+=`<div class="mf">`;
-if(ei!==null)h+=`<button class="dl" onclick="delG()">Delete Group</button>`;
-h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveG()">Save</button></div>`;
-el.innerHTML=h;
-}
+function pickMS(s){tmp._curStudent=tmp._curStudent===s?null:s;dMMulti()}
 
-function mt(s){const i=tmp.m.indexOf(s);if(i>=0)tmp.m.splice(i,1);else tmp.m.push(s);dM()}
+function buildRubric(cr,hz){
+const lv=hz?[4,3,2,1,0]:[4,3,2,1];
+let h=`<div class="rt-title">Click a cell to score, fine-tune with slider</div><table class="rt"><thead><tr><th></th>`;
+if(hz)h+=`<th>4</th><th>3</th><th>2</th><th>1</th><th>0</th>`;else h+=`<th>4</th><th>3</th><th>2</th><th>1</th>`;
+h+=`</tr></thead><tbody>`;
+cr.forEach(c=>{const v=tmp.sc[c.id];const vn=v!==undefined&&v!==null?v:-1;const base=vn>=0?Math.ceil(vn-0.001):99;
+h+=`<tr><td>${c.name}</td>`;lv.forEach(n=>{const hi=(vn>=0&&Math.ceil(vn-0.001)===n)?` s${n}`:'';h+=`<td class="pick${hi}" onclick="mB('${c.id}',${n})">${c['d'+n]||''}</td>`});h+=`</tr>`;
+if(vn>=0){const mn=hz?(base===0?0:base-1+0.1):(base===1?1:base-1+0.1);
+h+=`<tr><td colspan="${lv.length+1}"><div class="mp"><span class="lbl">${c.name}:</span><span class="val" id="mpv_${c.id}">${vn.toFixed(1)}</span><input type="range" min="${mn}" max="${base}" step="0.1" value="${vn}" oninput="mS('${c.id}',this.value)"><button class="clr" onclick="mC('${c.id}')">Clear</button></div></td></tr>`}});
+return h+`</tbody></table>`}
 
-function mBase(cid,n){
-// Clicking a column sets it to the top of that range (e.g. clicking "3" sets to 3.0)
-tmp.sc[cid]=n;
-dM();
-}
+function buildRubricFor(cr,hz,sn){
+const lv=hz?[4,3,2,1,0]:[4,3,2,1];const se=tmp.entries[sn];
+let h=`<table class="rt"><thead><tr><th></th>`;
+if(hz)h+=`<th>4</th><th>3</th><th>2</th><th>1</th><th>0</th>`;else h+=`<th>4</th><th>3</th><th>2</th><th>1</th>`;
+h+=`</tr></thead><tbody>`;
+cr.forEach(c=>{const v=se.sc[c.id];const vn=v!==undefined&&v!==null?v:-1;const base=vn>=0?Math.ceil(vn-0.001):99;
+h+=`<tr><td>${c.name}</td>`;lv.forEach(n=>{const hi=(vn>=0&&Math.ceil(vn-0.001)===n)?` s${n}`:'';h+=`<td class="pick${hi}" onclick="mBM('${esc(sn)}','${c.id}',${n})">${c['d'+n]||''}</td>`});h+=`</tr>`;
+if(vn>=0){const mn=hz?(base===0?0:base-1+0.1):(base===1?1:base-1+0.1);
+h+=`<tr><td colspan="${lv.length+1}"><div class="mp"><span class="lbl">${c.name}:</span><span class="val" id="mpv_${c.id}">${vn.toFixed(1)}</span><input type="range" min="${mn}" max="${base}" step="0.1" value="${vn}" oninput="mSM('${esc(sn)}','${c.id}',this.value)"><button class="clr" onclick="mCM('${esc(sn)}','${c.id}')">Clear</button></div></td></tr>`}});
+return h+`</tbody></table>`}
 
-function mSlide(cid,val){
-tmp.sc[cid]=parseFloat(parseFloat(val).toFixed(1));
-// Update just the display value without full redraw to keep slider smooth
-const vEl=document.getElementById('mpv_'+cid);
-if(vEl)vEl.textContent=tmp.sc[cid].toFixed(1);
-// Update avg
-const a=avg(tmp.sc);
-const aEl=document.querySelector('.ma .big');
-if(aEl)aEl.textContent=a!==null?a.toFixed(2):'\u2014';
-}
+// Podcast rubric handlers
+function mB(c,n){tmp.sc[c]=n;dMPod()}
+function mS(c,v){tmp.sc[c]=parseFloat(parseFloat(v).toFixed(1));const e=document.getElementById('mpv_'+c);if(e)e.textContent=tmp.sc[c].toFixed(1);const a=avg(tmp.sc);const ae=document.querySelector('.ma .big');if(ae)ae.textContent=a!==null?a.toFixed(2):'\u2014'}
+function mC(c){delete tmp.sc[c];dMPod()}
+// Multi rubric handlers
+function mBM(sn,c,n){if(!tmp.entries[sn])tmp.entries[sn]={sc:{},nt:''};tmp.entries[sn].sc[c]=n;dMMulti()}
+function mSM(sn,c,v){if(!tmp.entries[sn])return;tmp.entries[sn].sc[c]=parseFloat(parseFloat(v).toFixed(1));const e=document.getElementById('mpv_'+c);if(e)e.textContent=tmp.entries[sn].sc[c].toFixed(1);const a=avg(tmp.entries[sn].sc);const ae=document.querySelector('.ma .big');if(ae)ae.textContent=a!==null?a.toFixed(2):'\u2014'}
+function mCM(sn,c){if(!tmp.entries[sn])return;delete tmp.entries[sn].sc[c];dMMulti()}
 
-function mClear(cid){delete tmp.sc[cid];dM()}
+function saveAsmt(){
+if(!tmp.aname.trim()){alert('Enter an assessment name.');return}
+// Clean entries: remove students with no scores
+const clean={};Object.keys(tmp.entries).forEach(k=>{if(Object.keys(tmp.entries[k].sc||{}).length)clean[k]=tmp.entries[k]});
+const st=getStore();const o={aname:tmp.aname.trim(),entries:clean};
+if(curAsmtIdx!==null)st[curAsmtIdx]=o;else st.push(o);
+sv();dp();closeM()}
+function delAsmt(){if(!confirm('Delete this assessment?'))return;getStore().splice(curAsmtIdx,1);sv();dp();closeM()}
 
-function saveG(){
-const name=tmp.n.trim();
-if(!name){alert('Enter a group name.');return}
-if(!tmp.m.length){alert('Assign at least one student.');return}
-const obj={n:name,m:[...tmp.m],sc:{...tmp.sc},nt:tmp.nt};
-if(ei!==null)G[ei]=obj;else G.push(obj);
-sv();dS();closeM();
-}
-function delG(){if(!confirm(`Delete "${G[ei].n}"?`))return;G.splice(ei,1);sv();dS();closeM()}
-
-function exportCSV(){
-let csv='Student,Group,Content & Accuracy,Discussion Quality,Script & Preparation,Original Music,Production Quality,Average,Notes\n';
-R.forEach(nm=>{const d=inf(nm);const ss=CR.map(c=>d.sc[c.id]||'');const nt=(d.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
-csv+=`"${nm}","${d.gn||''}",${ss.join(',')},${d.av!==null?d.av.toFixed(2):''},"${nt}"\n`});
-dl(csv,'text/csv',`podcast_grades_${new Date().toISOString().slice(0,10)}.csv`)}
-function exportJSON(){dl(JSON.stringify(G,null,2),'application/json',`podcast_backup_${new Date().toISOString().slice(0,10)}.json`)}
-function dl(d,t,n){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([d],{type:t}));a.download=n;a.click()}
-function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace all data?')){G=JSON.parse(ev.target.result);sv();dS()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
-function clearAll(){if(!confirm('Delete everything?'))return;if(!confirm('Sure?'))return;G=[];localStorage.removeItem('pg5');sv();dS()}
-
+// EXPORT
+function eC(){
+const p=pg(),cr=p.crit;let csv='';
+if(p.type==='podcast'){
+csv='Student,Group,'+cr.map(c=>c.name).join(',')+',Average,Notes\n';
+const st=getStore();getRoster().forEach(nm=>{const g=st.find(x=>x.m&&x.m.includes(nm));const sc=g?g.sc:{};const a=g?avg(g.sc):null;const nt=(g&&g.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
+csv+=`"${nm}","${g?g.n:''}",${cr.map(c=>sc[c.id]||'').join(',')},${a!==null?a.toFixed(2):''},"${nt}"\n`})
+} else {
+// Multi: section, student, then one avg column per assessment
+if(p.sections){
+p.sections.forEach(sec=>{
+const st=(DB[p.id]&&DB[p.id][sec.id])||[];
+if(!st.length)return;
+csv+=`${sec.label}\n`;
+csv+='Student,'+st.map(a=>a.aname+' (Avg)').join(',')+','+st.map(a=>a.aname+' (Notes)').join(',')+'\n';
+sec.roster.forEach(nm=>{
+csv+=`"${nm}"`;
+st.forEach(a=>{const e=a.entries&&a.entries[nm];const av=e?avg(e.sc):null;csv+=`,${av!==null?av.toFixed(2):''}`});
+st.forEach(a=>{const e=a.entries&&a.entries[nm];const nt=(e&&e.nt||'').replace(/"/g,'""').replace(/\n/g,' ');csv+=`,"${nt}"`});
+csv+='\n'});csv+='\n'})
+}}
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`${cp}_grades_${cs||'all'}_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
+function eJ(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}));a.download=`grader_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
+function iJ(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace ALL data?')){DB=JSON.parse(ev.target.result);sv();render()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
+function clr(){if(!confirm('Clear '+pg().label+(cs?' ('+cs+')':'')+'?'))return;const p=pg();if(p.sections){if(DB[p.id])DB[p.id][cs]=[]}else DB[p.id]=[];sv();dp()}
 init();
 </script>
 </body>
