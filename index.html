@@ -7,152 +7,191 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#0f0f1a;color:#e0e0e0;min-height:100vh}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-h1{font-size:1.5em;color:#fff;margin-bottom:2px}
-.subtitle{color:#e8740c;font-size:.85em;margin-bottom:16px}
-.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.tab{padding:8px 18px;background:#1a1a2e;border:2px solid #333;border-radius:8px;cursor:pointer;font-size:.85em;color:#aaa;transition:.2s}
-.tab:hover{border-color:#e8740c;color:#fff}
-.tab.active{background:#6d2e46;border-color:#6d2e46;color:#fff}
-.group-section{background:#1a1a2e;border:2px solid #2a2a42;border-radius:12px;padding:18px;margin-bottom:16px}
-.group-section h2{font-size:1.1em;color:#fff;margin-bottom:12px}
-.group-name-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.group-name-row input{flex:1;min-width:180px;padding:8px 12px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.9em}
-.group-name-row input:focus{outline:none;border-color:#e8740c}
-.group-name-row button{padding:8px 14px;background:#e8740c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.85em}
-.group-name-row button:hover{background:#c55d0a}
-.group-card{background:#12121f;border:2px solid #2a2a42;border-radius:10px;padding:14px;margin-bottom:10px;transition:.2s}
-.group-card:hover{border-color:#444}
-.group-card.active{border-color:#e8740c}
-.group-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.group-header .gname{font-weight:bold;font-size:1em}
-.group-header .gscore{color:#e8740c;font-weight:bold;font-size:1.1em}
-.group-members{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.member-tag{background:#1a1a2e;border:1px solid #444;border-radius:4px;padding:2px 8px;font-size:.8em;color:#ccc}
-.del-group{background:none;border:none;color:#666;cursor:pointer;font-size:1em;padding:2px 6px}
-.del-group:hover{color:#c41e3a}
-.student-picker{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.pick-btn{padding:6px 12px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:6px;cursor:pointer;font-size:.82em;transition:.15s}
-.pick-btn:hover{border-color:#e8740c;color:#fff}
-.pick-btn.picked{background:#6d2e46;border-color:#6d2e46;color:#fff}
-.pick-btn.assigned{background:#333;border-color:#555;color:#666;cursor:not-allowed;text-decoration:line-through}
-.criteria{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.criterion{background:#0f0f1a;border-radius:8px;padding:10px 12px}
-.crit-row{display:flex;justify-content:space-between;align-items:center}
-.crit-name{font-weight:bold;color:#ccc;font-size:.88em}
-.crit-desc{font-size:.72em;color:#666}
-.crit-score{color:#e8740c;font-weight:bold;min-width:24px;text-align:right}
-.score-btns{display:flex;gap:5px;margin-top:6px}
-.sbtn{width:38px;height:34px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.9em;transition:.15s}
-.sbtn:hover{border-color:#e8740c;color:#fff}
-.sbtn.sel{color:#fff}
-.sbtn.s4.sel{background:#1b7340;border-color:#1b7340}
-.sbtn.s3.sel{background:#2e5090;border-color:#2e5090}
-.sbtn.s2.sel{background:#b8860b;border-color:#b8860b}
-.sbtn.s1.sel{background:#c41e3a;border-color:#c41e3a}
-.notes-box{margin-top:10px}
-.notes-box label{font-size:.8em;color:#777;display:block;margin-bottom:3px}
-.notes-box textarea{width:100%;min-height:60px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:8px;font-family:inherit;font-size:.85em;resize:vertical}
-.notes-box textarea:focus{outline:none;border-color:#e8740c}
-.avg-row{text-align:center;margin-top:12px;padding:10px;background:#0f0f1a;border-radius:8px}
-.avg-row .avg-num{font-size:1.8em;font-weight:bold;color:#e8740c}
-.avg-row .avg-lbl{font-size:.75em;color:#777}
-.sheet-wrap{overflow-x:auto;margin-top:8px}
-table.sheet{border-collapse:collapse;width:100%;font-size:.82em}
-table.sheet th{background:#1a1a2e;color:#e8740c;padding:8px 10px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0}
-table.sheet td{padding:7px 10px;border:1px solid #2a2a42;background:#12121f}
-table.sheet tr:hover td{background:#1a1a2e}
-table.sheet .score-cell{text-align:center;font-weight:bold}
-table.sheet .avg-cell{color:#e8740c;font-weight:bold;text-align:center}
-table.sheet .notes-cell{max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#999;font-size:.9em}
-table.sheet .group-cell{color:#6d2e46;font-size:.85em}
-.actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.actions button{padding:7px 14px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.82em;transition:.2s}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+h1{font-size:1.4em;color:#fff;margin-bottom:2px}
+.subtitle{color:#e8740c;font-size:.82em;margin-bottom:14px}
+
+/* TOP ACTIONS */
+.actions{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.actions button{padding:6px 13px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:6px;cursor:pointer;font-size:.8em;transition:.2s}
 .actions button:hover{border-color:#e8740c;color:#fff}
 .actions button.export{border-color:#1b7340}
 .actions button.export:hover{background:#1b7340;color:#fff}
 .actions button.danger{border-color:#c41e3a}
 .actions button.danger:hover{background:#c41e3a;color:#fff}
-.empty{text-align:center;padding:30px;color:#555;font-size:.9em}
-@media(max-width:600px){.container{padding:10px}.sbtn{width:34px;height:30px;font-size:.82em}}
+
+/* GROUP BUILDER */
+.builder{background:#1a1a2e;border:2px solid #2a2a42;border-radius:10px;padding:14px;margin-bottom:14px}
+.builder h2{font-size:1em;color:#fff;margin-bottom:10px}
+.new-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.new-row input{flex:1;min-width:160px;padding:7px 10px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.88em}
+.new-row input:focus{outline:none;border-color:#e8740c}
+.new-row button{padding:7px 14px;background:#e8740c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;font-size:.85em}
+.new-row button:hover{background:#c55d0a}
+
+/* GROUP TABS */
+.group-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.gtab{padding:6px 14px;background:#12121f;border:2px solid #2a2a42;border-radius:6px;cursor:pointer;font-size:.82em;color:#aaa;transition:.15s;position:relative}
+.gtab:hover{border-color:#e8740c;color:#fff}
+.gtab.active{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.gtab .cnt{font-size:.75em;color:#888;margin-left:4px}
+.gtab.active .cnt{color:#ddd}
+.gtab .x{position:absolute;top:-6px;right:-6px;background:#c41e3a;color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:.65em;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1}
+.gtab:hover .x{display:flex}
+
+/* ACTIVE GROUP PANEL */
+.gpanel{background:#12121f;border:2px solid #2a2a42;border-radius:8px;padding:12px;margin-bottom:10px}
+.gpanel-title{font-weight:bold;color:#e8740c;margin-bottom:8px;font-size:.95em}
+.pick-label{font-size:.8em;color:#777;margin-bottom:4px}
+.picks{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.pbtn{padding:5px 10px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:5px;cursor:pointer;font-size:.8em;transition:.12s}
+.pbtn:hover{border-color:#e8740c;color:#fff}
+.pbtn.in{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.pbtn.taken{background:#222;border-color:#444;color:#555;cursor:not-allowed;text-decoration:line-through}
+
+/* RUBRIC */
+.rubric{display:grid;grid-template-columns:1fr;gap:8px}
+.crit{background:#0f0f1a;border-radius:6px;padding:8px 10px}
+.crit-top{display:flex;justify-content:space-between;align-items:center}
+.crit-name{font-weight:bold;color:#ccc;font-size:.85em}
+.crit-desc{font-size:.7em;color:#555}
+.crit-val{color:#e8740c;font-weight:bold;font-size:.95em}
+.sbtns{display:flex;gap:4px;margin-top:5px}
+.sb{width:36px;height:32px;border:2px solid #333;background:#1a1a2e;color:#aaa;border-radius:5px;cursor:pointer;font-weight:bold;font-size:.88em;transition:.12s}
+.sb:hover{border-color:#e8740c;color:#fff}
+.sb.on{color:#fff}
+.sb.s4.on{background:#1b7340;border-color:#1b7340}
+.sb.s3.on{background:#2e5090;border-color:#2e5090}
+.sb.s2.on{background:#b8860b;border-color:#b8860b}
+.sb.s1.on{background:#c41e3a;border-color:#c41e3a}
+.sb.clr{width:auto;padding:0 8px;font-size:.7em}
+
+.notes-row{margin-top:8px}
+.notes-row label{font-size:.78em;color:#666;display:block;margin-bottom:2px}
+.notes-row textarea{width:100%;min-height:50px;background:#0f0f1a;border:2px solid #333;border-radius:6px;color:#e0e0e0;padding:7px;font-family:inherit;font-size:.83em;resize:vertical}
+.notes-row textarea:focus{outline:none;border-color:#e8740c}
+
+.avg-bar{text-align:center;margin-top:8px;padding:8px;background:#0f0f1a;border-radius:6px}
+.avg-bar .big{font-size:1.6em;font-weight:bold;color:#e8740c}
+.avg-bar .sm{font-size:.72em;color:#666}
+
+.no-group{text-align:center;color:#555;padding:20px;font-size:.88em}
+
+/* SPREADSHEET — always visible */
+.sheet-section{background:#1a1a2e;border:2px solid #2a2a42;border-radius:10px;padding:14px}
+.sheet-section h2{font-size:1em;color:#fff;margin-bottom:8px}
+.sheet-wrap{overflow-x:auto}
+table.sh{border-collapse:collapse;width:100%;font-size:.8em}
+table.sh th{background:#12121f;color:#e8740c;padding:7px 8px;text-align:left;border:1px solid #2a2a42;white-space:nowrap;position:sticky;top:0;z-index:1}
+table.sh td{padding:6px 8px;border:1px solid #2a2a42;background:#0f0f1a}
+table.sh tr:hover td{background:#151525}
+table.sh .sc{text-align:center;font-weight:bold}
+table.sh .av{color:#e8740c;font-weight:bold;text-align:center}
+table.sh .nt{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#888;font-size:.9em}
+table.sh .gr{color:#6d2e46;font-size:.88em}
+table.sh .un{color:#c41e3a;font-style:italic}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Recording Superstars Podcast Grader</h1>
 <p class="subtitle">Music 8 • Mr. Burgess • STEM Middle Academy</p>
-<div class="tabs" id="viewTabs"></div>
+
 <div class="actions">
 <button class="export" onclick="exportCSV()">Export CSV for Schoology</button>
-<button onclick="exportJSON()">Save Backup (JSON)</button>
-<button onclick="document.getElementById('importFile').click()">Load Backup</button>
-<input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-<button class="danger" onclick="clearGroups()">Clear All Groups</button>
+<button onclick="exportJSON()">Save Backup</button>
+<button onclick="document.getElementById('imp').click()">Load Backup</button>
+<input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
+<button class="danger" onclick="clearAll()">Clear All</button>
 </div>
-<div id="mainContent"></div>
+
+<div class="builder" id="builder"></div>
+<div class="sheet-section" id="sheetSection"></div>
 </div>
+
 <script>
-const ROSTER=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah"];
-const CRITERIA=[{id:'content',name:'Content & Accuracy',desc:'Key facts, connections to unit themes'},{id:'discussion',name:'Discussion Quality',desc:'Natural conversation, equal contributions'},{id:'script',name:'Script & Preparation',desc:'Structure, discussion question, timing'},{id:'music',name:'Original Music',desc:'BandLab original, creative choices, fits tone'},{id:'production',name:'Production Quality',desc:'Clear audio, balanced levels, transitions'}];
-let groups=[],activeGroup=null,view='grade';
-function init(){const s=localStorage.getItem('podcastGraderV2');if(s)groups=JSON.parse(s);render()}
-function save(){localStorage.setItem('podcastGraderV2',JSON.stringify(groups))}
-function assignedStudents(){const s=new Set();groups.forEach(g=>g.members.forEach(m=>s.add(m)));return s}
-function calcAvg(scores){const v=Object.values(scores);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
-function studentScore(name){const g=groups.find(gr=>gr.members.includes(name));if(!g)return{scores:{},avg:null,group:null,notes:''};return{scores:g.scores,avg:calcAvg(g.scores),group:g.name,notes:g.notes}}
-function render(){renderTabs();if(view==='grade')renderGrade();else renderSheet()}
-function renderTabs(){document.getElementById('viewTabs').innerHTML=[{id:'grade',label:'Grade Groups'},{id:'sheet',label:'Spreadsheet View'}].map(t=>`<div class="tab ${view===t.id?'active':''}" onclick="switchView('${t.id}')">${t.label}</div>`).join('')}
-function switchView(v){view=v;activeGroup=null;render()}
+const R=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah"];
+const C=[{id:'content',n:'Content & Accuracy',d:'Key facts, unit theme connections'},{id:'discussion',n:'Discussion Quality',d:'Natural conversation, equal contributions'},{id:'script',n:'Script & Preparation',d:'Structure, discussion Q, timing'},{id:'music',n:'Original Music',d:'BandLab original, creative choices'},{id:'production',n:'Production Quality',d:'Clear audio, levels, transitions'}];
+
+let G=[],ag=null;
+function init(){const s=localStorage.getItem('pg3');if(s)G=JSON.parse(s);draw()}
+function sv(){localStorage.setItem('pg3',JSON.stringify(G))}
+function asgd(){const s=new Set();G.forEach(g=>g.m.forEach(x=>s.add(x)));return s}
+function avg(sc){const v=Object.values(sc);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function info(nm){const g=G.find(x=>x.m.includes(nm));if(!g)return{sc:{},av:null,gn:null,nt:''};return{sc:g.sc,av:avg(g.sc),gn:g.n,nt:g.nt}}
 function esc(s){return s.replace(/'/g,"\\'")}
-function renderGrade(){
-const el=document.getElementById('mainContent');const assigned=assignedStudents();
-let h=`<div class="group-section"><h2>Groups</h2>`;
-h+=`<div class="group-name-row"><input id="newGroupName" placeholder="Group name (e.g. Team Bessie, Group 1...)" onkeydown="if(event.key==='Enter')addGroup()"><button onclick="addGroup()">+ New Group</button></div>`;
-if(!groups.length){h+=`<div class="empty">No groups yet. Create a group and assign students.</div>`}
-else{groups.forEach((g,i)=>{
-const avg=calcAvg(g.scores);const scored=Object.keys(g.scores).length;const active=activeGroup===i;
-h+=`<div class="group-card ${active?'active':''}" id="gc${i}">`;
-h+=`<div class="group-header" onclick="toggleGroup(${i})"><div><span class="gname">${g.name}</span> <span style="color:#777;font-size:.8em">(${g.members.length} students)</span></div>`;
-h+=`<div style="display:flex;align-items:center;gap:8px"><span class="gscore">${avg!==null?avg.toFixed(1):'—'}</span><span style="color:#666;font-size:.75em">${scored}/5</span><button class="del-group" onclick="event.stopPropagation();deleteGroup(${i})" title="Delete group">✕</button></div></div>`;
-if(g.members.length){h+=`<div class="group-members">${g.members.map(m=>`<span class="member-tag">${m}</span>`).join('')}</div>`}
-if(active){
-h+=`<div style="margin-top:12px;font-size:.85em;color:#888">Click students to add/remove from this group:</div><div class="student-picker">`;
-ROSTER.forEach(s=>{const inThis=g.members.includes(s);const inOther=!inThis&&assigned.has(s);const cls=inThis?'picked':inOther?'assigned':'';
-h+=`<button class="pick-btn ${cls}" onclick="${inOther?'':`toggleMember(${i},'${esc(s)}')`}" ${inOther?'disabled':''}>${s.split(',')[0]}</button>`});
-h+=`</div><div class="criteria">`;
-CRITERIA.forEach(c=>{const val=g.scores[c.id]||0;
-h+=`<div class="criterion"><div class="crit-row"><div><span class="crit-name">${c.name}</span><br><span class="crit-desc">${c.desc}</span></div><span class="crit-score">${val||'—'}</span></div>`;
-h+=`<div class="score-btns">${[1,2,3,4].map(n=>`<button class="sbtn s${n} ${val===n?'sel':''}" onclick="setScore(${i},'${c.id}',${n})">${n}</button>`).join('')}<button class="sbtn" onclick="setScore(${i},'${c.id}',0)" style="font-size:.7em;width:auto;padding:0 8px">Clear</button></div></div>`});
-h+=`</div><div class="notes-box"><label>Notes for Schoology</label><textarea id="notes${i}" oninput="saveNotes(${i})">${g.notes||''}</textarea></div>`;
-const a=calcAvg(g.scores);h+=`<div class="avg-row"><div class="avg-lbl">Group Average</div><div class="avg-num">${a!==null?a.toFixed(2):'—'}</div></div>`}
-h+=`</div>`})}
-h+=`</div>`;el.innerHTML=h}
 
-function renderSheet(){
-const el=document.getElementById('mainContent');
-let h=`<div class="group-section"><h2>All Grades — Music 8</h2><div class="sheet-wrap"><table class="sheet"><thead><tr><th>Student</th><th>Group</th>`;
-CRITERIA.forEach(c=>h+=`<th>${c.name}</th>`);h+=`<th>Average</th><th>Notes</th></tr></thead><tbody>`;
-ROSTER.forEach(name=>{const info=studentScore(name);
-h+=`<tr><td><strong>${name}</strong></td><td class="group-cell">${info.group||'<span style="color:#c41e3a">Unassigned</span>'}</td>`;
-CRITERIA.forEach(c=>{const v=info.scores[c.id];const color=v===4?'#1b7340':v===3?'#2e5090':v===2?'#b8860b':v===1?'#c41e3a':'#555';
-h+=`<td class="score-cell" style="color:${color}">${v||'—'}</td>`});
-h+=`<td class="avg-cell">${info.avg!==null?info.avg.toFixed(2):'—'}</td>`;
-h+=`<td class="notes-cell" title="${(info.notes||'').replace(/"/g,'&quot;')}">${info.notes||''}</td></tr>`});
-h+=`</tbody></table></div></div>`;el.innerHTML=h}
+function draw(){drawBuilder();drawSheet()}
 
-function addGroup(){const input=document.getElementById('newGroupName');const name=input.value.trim();if(!name)return;groups.push({name,members:[],scores:{},notes:''});activeGroup=groups.length-1;input.value='';save();render()}
-function toggleGroup(i){activeGroup=activeGroup===i?null:i;render();if(activeGroup!==null)document.getElementById('gc'+i)?.scrollIntoView({behavior:'smooth',block:'nearest'})}
-function deleteGroup(i){if(!confirm(`Delete group "${groups[i].name}"?`))return;groups.splice(i,1);if(activeGroup===i)activeGroup=null;else if(activeGroup>i)activeGroup--;save();render()}
-function toggleMember(gi,student){const g=groups[gi];const idx=g.members.indexOf(student);if(idx>=0)g.members.splice(idx,1);else g.members.push(student);save();render()}
-function setScore(gi,cid,val){if(val===0)delete groups[gi].scores[cid];else groups[gi].scores[cid]=val;save();render()}
-function saveNotes(gi){groups[gi].notes=document.getElementById('notes'+gi).value;save()}
-function exportCSV(){let csv='Student,Group,Content & Accuracy,Discussion Quality,Script & Preparation,Original Music,Production Quality,Average,Notes\n';
-ROSTER.forEach(name=>{const info=studentScore(name);const scores=CRITERIA.map(c=>info.scores[c.id]||'');const notes=(info.notes||'').replace(/"/g,'""').replace(/\n/g,' ');
-csv+=`"${name}","${info.group||''}",${scores.join(',')},${info.avg!==null?info.avg.toFixed(2):''},"${notes}"\n`});
-const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`podcast_grades_music8_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
-function exportJSON(){const blob=new Blob([JSON.stringify(groups,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`podcast_grades_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
-function importJSON(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(confirm('Replace all current data?')){groups=d;activeGroup=null;save();render()}}catch(err){alert('Invalid file.')}};r.readAsText(file);e.target.value=''}
-function clearGroups(){if(!confirm('Delete ALL groups and grades?'))return;if(!confirm('Really sure?'))return;groups=[];activeGroup=null;localStorage.removeItem('podcastGraderV2');save();render()}
+function drawBuilder(){
+const el=document.getElementById('builder');
+let h=`<h2>Rubric Grading</h2>`;
+h+=`<div class="new-row"><input id="gn" placeholder="New group name..." onkeydown="if(event.key==='Enter')addG()"><button onclick="addG()">+ New Group</button></div>`;
+if(G.length){
+h+=`<div class="group-tabs">`;
+G.forEach((g,i)=>{
+h+=`<div class="gtab ${ag===i?'active':''}" onclick="selG(${i})">${g.n}<span class="cnt">(${g.m.length})</span><button class="x" onclick="event.stopPropagation();delG(${i})">✕</button></div>`;
+});
+h+=`</div>`;
+if(ag!==null&&G[ag]){
+const g=G[ag];const aset=asgd();
+h+=`<div class="gpanel"><div class="gpanel-title">${g.n}</div>`;
+h+=`<div class="pick-label">Click names to assign/remove:</div><div class="picks">`;
+R.forEach(s=>{const me=g.m.includes(s);const other=!me&&aset.has(s);
+h+=`<button class="pbtn ${me?'in':other?'taken':''}" ${other?'disabled':''} onclick="${other?'':`tog(${ag},'${esc(s)}')`}">${s.split(',')[0]}</button>`});
+h+=`</div>`;
+
+// RUBRIC
+h+=`<div class="rubric">`;
+C.forEach(c=>{const v=g.sc[c.id]||0;
+h+=`<div class="crit"><div class="crit-top"><div><span class="crit-name">${c.n}</span><br><span class="crit-desc">${c.d}</span></div><span class="crit-val">${v||'—'}</span></div>`;
+h+=`<div class="sbtns">${[1,2,3,4].map(n=>`<button class="sb s${n} ${v===n?'on':''}" onclick="sc(${ag},'${c.id}',${n})">${n}</button>`).join('')}<button class="sb clr" onclick="sc(${ag},'${c.id}',0)">Clear</button></div></div>`});
+h+=`</div>`;
+
+h+=`<div class="notes-row"><label>Notes for Schoology feedback</label><textarea id="nt${ag}" oninput="sn(${ag})">${g.nt||''}</textarea></div>`;
+const a=avg(g.sc);
+h+=`<div class="avg-bar"><div class="sm">Group Average</div><div class="big">${a!==null?a.toFixed(2):'—'}</div></div>`;
+h+=`</div>`;
+}
+} else {
+h+=`<div class="no-group">Create a group to start grading. Click the group tab, assign students, then score the rubric.</div>`;
+}
+el.innerHTML=h;
+}
+
+function drawSheet(){
+const el=document.getElementById('sheetSection');
+let h=`<h2>All Student Grades</h2><div class="sheet-wrap"><table class="sh"><thead><tr><th>Student</th><th>Group</th>`;
+C.forEach(c=>h+=`<th>${c.n}</th>`);
+h+=`<th>Avg</th><th>Notes</th></tr></thead><tbody>`;
+R.forEach(nm=>{
+const d=info(nm);
+h+=`<tr><td><strong>${nm}</strong></td>`;
+h+=`<td class="gr">${d.gn||'<span class="un">Unassigned</span>'}</td>`;
+C.forEach(c=>{const v=d.sc[c.id];const cl=v===4?'#1b7340':v===3?'#2e5090':v===2?'#b8860b':v===1?'#c41e3a':'#444';
+h+=`<td class="sc" style="color:${cl}">${v||'—'}</td>`});
+h+=`<td class="av">${d.av!==null?d.av.toFixed(2):'—'}</td>`;
+h+=`<td class="nt" title="${(d.nt||'').replace(/"/g,'&quot;')}">${d.nt||''}</td></tr>`});
+h+=`</tbody></table></div>`;
+el.innerHTML=h;
+}
+
+function addG(){const i=document.getElementById('gn');const n=i.value.trim();if(!n)return;G.push({n,m:[],sc:{},nt:''});ag=G.length-1;i.value='';sv();draw()}
+function selG(i){ag=ag===i?null:i;draw()}
+function delG(i){if(!confirm(`Delete "${G[i].n}"?`))return;G.splice(i,1);if(ag===i)ag=null;else if(ag>i)ag--;sv();draw()}
+function tog(gi,s){const g=G[gi];const x=g.m.indexOf(s);if(x>=0)g.m.splice(x,1);else g.m.push(s);sv();draw()}
+function sc(gi,cid,v){if(v===0)delete G[gi].sc[cid];else G[gi].sc[cid]=v;sv();draw()}
+function sn(gi){G[gi].nt=document.getElementById('nt'+gi).value;sv();drawSheet()}
+
+function exportCSV(){
+let csv='Student,Group,Content & Accuracy,Discussion Quality,Script & Preparation,Original Music,Production Quality,Average,Notes\n';
+R.forEach(nm=>{const d=info(nm);const ss=C.map(c=>d.sc[c.id]||'');const nt=(d.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
+csv+=`"${nm}","${d.gn||''}",${ss.join(',')},${d.av!==null?d.av.toFixed(2):''},"${nt}"\n`});
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`podcast_grades_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
+function exportJSON(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(G,null,2)],{type:'application/json'}));a.download=`podcast_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace all data?')){G=JSON.parse(ev.target.result);ag=null;sv();draw()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
+function clearAll(){if(!confirm('Delete everything?'))return;if(!confirm('Sure?'))return;G=[];ag=null;localStorage.removeItem('pg3');sv();draw()}
+
 init();
 </script>
 </body>
