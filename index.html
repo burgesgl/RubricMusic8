@@ -470,12 +470,15 @@ function dpLists(){
   h+='<button id="btnSaveBk">Save Backup</button>';
   h+='<button id="btnLoadBk">Load Backup</button>';
   h+='<input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)">';
+  h+='<button class="dn" id="btnClearLists">Clear All Lists</button>';
   h+='</div>';
   if(!LISTS.length){h+='<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list for field trips, events, group lessons, etc.</div>'}
   else{LISTS.forEach(function(lst,li){
     if(!lst.checkpoints)lst.checkpoints=[];
     if(!lst.checks)lst.checks={};
     lst.checkpoints=lst.checkpoints.map(function(cp){if(typeof cp==="string")return{name:cp,options:["Yes"]};return cp});
+    // Fix old boolean check values: true -> first option name
+    lst.members.forEach(function(m){if(lst.checks[m]){Object.keys(lst.checks[m]).forEach(function(k){if(lst.checks[m][k]===true){var found=lst.checkpoints.find(function(c){return c.name===k});lst.checks[m][k]=found?found.options[0]:'Yes'}if(lst.checks[m][k]===false)delete lst.checks[m][k]})}});
     h+='<div class="list-card" data-li="'+li+'">';
     h+='<div class="list-header"><div><span class="list-name">'+lst.name+'</span> <span class="list-count">('+lst.members.length+' students)</span></div>';
     h+='<div style="display:flex;gap:4px">';
@@ -549,21 +552,22 @@ function dpLists(){
   var eb=document.getElementById('btnExList');if(eb)eb.onclick=function(){exportListCSV()};
   var sb=document.getElementById('btnSaveBk');if(sb)sb.onclick=function(){eJ()};
   var lb=document.getElementById('btnLoadBk');if(lb)lb.onclick=function(){document.getElementById('imp').click()};
+  var cb=document.getElementById('btnClearLists');if(cb)cb.onclick=function(){if(!confirm('Clear ALL lists?'))return;if(!confirm('Sure?'))return;LISTS=[];localStorage.removeItem('mg5lists');svL();dpLists()};
 }
 
 // Single delegated click handler for lists page
 document.addEventListener('click',function(e){
   var t=e.target;
   while(t&&t!==document.body){
-    if(t.dataset&&t.dataset.act)break;
+    if(t.getAttribute&&t.getAttribute('data-act'))break;
     t=t.parentElement;
   }
-  if(!t||!t.dataset||!t.dataset.act)return;
-  var a=t.dataset.act;
-  var li=t.dataset.li!==undefined?parseInt(t.dataset.li):null;
-  var mi=t.dataset.mi!==undefined?parseInt(t.dataset.mi):null;
-  var ci=t.dataset.ci!==undefined?parseInt(t.dataset.ci):null;
-  var oi=t.dataset.oi!==undefined?parseInt(t.dataset.oi):null;
+  if(!t||!t.getAttribute||!t.getAttribute('data-act'))return;
+  var a=t.getAttribute('data-act');
+  var li=t.getAttribute('data-li')!==null?parseInt(t.getAttribute('data-li')):null;
+  var mi=t.getAttribute('data-mi')!==null?parseInt(t.getAttribute('data-mi')):null;
+  var ci=t.getAttribute('data-ci')!==null?parseInt(t.getAttribute('data-ci')):null;
+  var oi=t.getAttribute('data-oi')!==null?parseInt(t.getAttribute('data-oi')):null;
 
   if(a==='spin'&&li!==null){openSpinList(LISTS[li].members,LISTS[li].name)}
   else if(a==='edit'&&li!==null){editList(li)}
