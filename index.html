@@ -459,67 +459,71 @@ function resetSpin(){
 
 // === LISTS PAGE ===
 var CP_COLORS=['#1b7340','#2e5090','#e8740c','#6d2e46','#b8860b','#c41e3a','#4a90d9','#555'];
-var activePicker=null;
-
-function closePicker(){if(activePicker){activePicker.remove();activePicker=null}}
+var openPick=null; // {li,mi,ci} or null — tracks which cell has its picker open
 
 function dpLists(){
-  closePicker();
+  openPick=null;
   var el=document.getElementById('pageArea');
   var h='<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById(\'imp\').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>';
   if(!LISTS.length){h+='<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list for field trips, events, group lessons, etc.</div>'}
   else{LISTS.forEach(function(lst,li){
     if(!lst.checkpoints)lst.checkpoints=[];
     if(!lst.checks)lst.checks={};
-    // Migrate old boolean checkpoints to new object format
-    lst.checkpoints=lst.checkpoints.map(function(cp){
-      if(typeof cp==='string')return{name:cp,options:['Yes']};return cp;
-    });
+    lst.checkpoints=lst.checkpoints.map(function(cp){if(typeof cp==='string')return{name:cp,options:['Yes']};return cp});
     h+='<div class="list-card">';
     h+='<div class="list-header"><div><span class="list-name">'+lst.name+'</span> <span class="list-count">('+lst.members.length+' students)</span></div>';
     h+='<div style="display:flex;gap:4px">';
-    h+='<button class="pk in" style="font-size:.75em;padding:3px 8px" data-action="spin" data-li="'+li+'">&#x1F3B2; Spin</button>';
-    h+='<button class="pk" style="font-size:.75em;padding:3px 8px" data-action="editlist" data-li="'+li+'">Edit</button>';
-    h+='<button class="pk" style="font-size:.75em;padding:3px 8px;border-color:#c41e3a" data-action="deletelist" data-li="'+li+'">Delete</button>';
+    h+='<button class="pk in" style="font-size:.75em;padding:3px 8px" onclick="openSpinList(LISTS['+li+'].members,LISTS['+li+'].name)">&#x1F3B2; Spin</button>';
+    h+='<button class="pk" style="font-size:.75em;padding:3px 8px" onclick="editList('+li+')">Edit</button>';
+    h+='<button class="pk" style="font-size:.75em;padding:3px 8px;border-color:#c41e3a" onclick="deleteList('+li+')">Delete</button>';
     h+='</div></div>';
-    // Variable summary
     h+='<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">';
-    h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" data-action="addcp" data-li="'+li+'">+ Add Variable</button>';
+    h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" onclick="addCp('+li+')">+ Add Variable</button>';
     lst.checkpoints.forEach(function(cp,ci){
       var total=lst.members.length;
       var filled=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp.name]}).length;
       var pct=total?Math.round(filled/total*100):0;
       var col=pct===100?'#1b7340':pct>=75?'#2e5090':pct>=50?'#b8860b':'#c41e3a';
-      // Show breakdown per option
-      var breakdown=cp.options.map(function(opt,oi){
+      var bd=cp.options.map(function(opt,oi){
         var cnt=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp.name]===opt}).length;
         return cnt?'<span style="color:'+CP_COLORS[oi%CP_COLORS.length]+'">'+opt+':'+cnt+'</span>':'';
-      }).filter(function(s){return s}).join(' ');
-      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp.name+' '+filled+'/'+total+' ('+pct+'%) '+(breakdown?' ['+breakdown+']':'')+'</span>';
+      }).filter(Boolean).join(' ');
+      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp.name+' '+filled+'/'+total+' ('+pct+'%)'+(bd?' ['+bd+']':'')+'</span>';
     });
     h+='</div>';
-    // Table
     if(lst.members.length){
       h+='<div style="overflow-x:auto;margin-top:8px"><table class="sh" style="font-size:.74em"><thead><tr><th style="text-align:left">Student</th><th>&#x260E;</th>';
       lst.checkpoints.forEach(function(cp,ci){
-        h+='<th style="min-width:90px">'+cp.name+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove">&#x2715;</span></th>';
+        h+='<th style="min-width:90px">'+cp.name+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" onclick="removeCp('+li+','+ci+')" title="Remove">&#x2715;</span></th>';
       });
       h+='</tr></thead><tbody>';
       lst.members.forEach(function(m,mi){
         var ct=getContact(m);
         h+='<tr><td style="text-align:left">'+m+'</td>';
-        h+='<td style="text-align:center">'+(ct&&ct.p?'<span style="cursor:pointer;opacity:.5" data-action="phone" data-li="'+li+'" data-mi="'+mi+'">&#x260E;</span>':'')+'</td>';
+        h+='<td style="text-align:center">'+(ct&&ct.p?'<span style="cursor:pointer;opacity:.5" onclick="showContact(\''+m.replace(/'/g,"\\'")+'\')" >&#x260E;</span>':'')+'</td>';
         lst.checkpoints.forEach(function(cp,ci){
           var val=(lst.checks[m]&&lst.checks[m][cp.name])||'';
           var optIdx=val?cp.options.indexOf(val):-1;
           var c=optIdx>=0?CP_COLORS[optIdx%CP_COLORS.length]:'#555';
-          var bg=optIdx>=0?c+'22':'transparent';
-          h+='<td style="text-align:center;cursor:pointer;font-size:.82em;padding:4px 6px;background:'+bg+';color:'+c+'" data-action="pick" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+(val||'<span style="opacity:.3">&#x2014;</span>')+'</td>';
+          var isOpen=openPick&&openPick.li===li&&openPick.mi===mi&&openPick.ci===ci;
+          if(isOpen){
+            // Render inline picker buttons inside the cell
+            h+='<td style="text-align:center;padding:2px;background:#0f0f1a">';
+            cp.options.forEach(function(opt,oi){
+              var oc=CP_COLORS[oi%CP_COLORS.length];
+              var isCur=val===opt;
+              h+='<div style="cursor:pointer;padding:4px 8px;margin:2px;border-radius:4px;font-size:.85em;border:2px solid '+(isCur?oc:'#333')+';background:'+(isCur?oc+'33':'#12121f')+';color:'+(isCur?oc:'#ccc')+';font-weight:'+(isCur?'bold':'normal')+'" onclick="setCpVal('+li+','+mi+','+ci+',\''+opt.replace(/'/g,"\\'")+'\')">'+(isCur?'&#x2713; ':'')+opt+'</div>';
+            });
+            h+='<div style="cursor:pointer;padding:3px 8px;margin:2px;border-radius:4px;font-size:.75em;border:1px solid #444;color:#888;background:#0f0f1a" onclick="setCpVal('+li+','+mi+','+ci+',\'\')">&#x2715; Clear</div>';
+            h+='<div style="cursor:pointer;padding:2px 8px;margin:2px;font-size:.7em;color:#666;text-align:right" onclick="closeCpPick()">close</div>';
+            h+='</td>';
+          } else {
+            h+='<td style="text-align:center;cursor:pointer;font-size:.82em;padding:4px 6px;background:'+(val?c+'22':'transparent')+';color:'+c+'" onclick="openCpPick('+li+','+mi+','+ci+')">'+(val||'<span style="opacity:.3">&#x2014;</span>')+'</td>';
+          }
         });
         h+='</tr>';
       });
       h+='</tbody></table></div>';
-      // Legend
       if(lst.checkpoints.length){
         h+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:10px">';
         lst.checkpoints.forEach(function(cp){
@@ -537,88 +541,34 @@ function dpLists(){
   el.innerHTML=h;
 }
 
-function showPicker(td,li,mi,ci){
-  closePicker();
-  var lst=LISTS[li],cp=lst.checkpoints[ci],m=lst.members[mi];
-  var cur=(lst.checks[m]&&lst.checks[m][cp.name])||'';
-  var rect=td.getBoundingClientRect();
-  var d=document.createElement('div');
-  d.style.cssText='position:fixed;z-index:200;background:#1a1a2e;border:2px solid #e8740c;border-radius:8px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:3px;min-width:120px';
-  d.style.left=Math.min(rect.left,window.innerWidth-160)+'px';
-  d.style.top=Math.min(rect.bottom+4,window.innerHeight-200)+'px';
-  // Options
-  cp.options.forEach(function(opt,oi){
-    var btn=document.createElement('button');
-    var c=CP_COLORS[oi%CP_COLORS.length];
-    var isCur=cur===opt;
-    btn.style.cssText='display:block;width:100%;padding:6px 10px;border:2px solid '+(isCur?c:'#333')+';background:'+(isCur?c+'33':'#12121f')+';color:'+(isCur?c:'#ccc')+';border-radius:5px;cursor:pointer;font-size:.82em;text-align:left;font-weight:'+(isCur?'bold':'normal');
-    btn.textContent=(isCur?'\u2713 ':'')+opt;
-    btn.onmouseover=function(){this.style.borderColor=c;this.style.color=c};
-    btn.onmouseout=function(){if(!isCur){this.style.borderColor='#333';this.style.color='#ccc'}};
-    btn.onclick=function(e){
-      e.stopPropagation();
-      if(!lst.checks[m])lst.checks[m]={};
-      lst.checks[m][cp.name]=opt;
-      svL();closePicker();dpLists();
-    };
-    d.appendChild(btn);
-  });
-  // Clear button
-  var clr=document.createElement('button');
-  clr.style.cssText='display:block;width:100%;padding:5px 10px;border:1px solid #444;background:#0f0f1a;color:#888;border-radius:5px;cursor:pointer;font-size:.78em;text-align:left;margin-top:2px';
-  clr.textContent='\u2715 Clear';
-  clr.onclick=function(e){
-    e.stopPropagation();
-    if(lst.checks[m])delete lst.checks[m][cp.name];
-    svL();closePicker();dpLists();
-  };
-  d.appendChild(clr);
-  document.body.appendChild(d);
-  activePicker=d;
-  setTimeout(function(){
-    document.addEventListener('click',function handler(e){
-      if(!d.contains(e.target)){closePicker();document.removeEventListener('click',handler)}
-    });
-  },10);
+function openCpPick(li,mi,ci){openPick={li:li,mi:mi,ci:ci};dpLists()}
+function closeCpPick(){openPick=null;dpLists()}
+function setCpVal(li,mi,ci,val){
+  var lst=LISTS[li],m=lst.members[mi],cpn=lst.checkpoints[ci].name;
+  if(!lst.checks[m])lst.checks[m]={};
+  if(val)lst.checks[m][cpn]=val;else delete lst.checks[m][cpn];
+  openPick=null;
+  svL();dpLists();
 }
-
-// Event delegation
-document.addEventListener('click',function(e){
-  var t=e.target;
-  while(t&&t!==document.body&&!t.dataset.action)t=t.parentElement;
-  if(!t||!t.dataset.action)return;
-  var a=t.dataset.action,li=parseInt(t.dataset.li),ci=parseInt(t.dataset.ci),mi=parseInt(t.dataset.mi);
-  if(a==='addcp'){
-    var name=prompt('Variable name:\n(e.g. "Transportation Home", "Has Materials", "Attendance")');
-    if(!name||!name.trim())return;
-    var opts=prompt('Options separated by commas:\n(e.g. "Bus, Car Pickup, No Show")\n(e.g. "Present, Absent, Late")\n(e.g. "Has All, Missing Instrument, Missing Everything")');
-    if(!opts||!opts.trim())return;
-    var optArr=opts.split(',').map(function(s){return s.trim()}).filter(function(s){return s});
-    if(!optArr.length)return;
-    if(!LISTS[li].checkpoints)LISTS[li].checkpoints=[];
-    if(!LISTS[li].checks)LISTS[li].checks={};
-    LISTS[li].checkpoints.push({name:name.trim(),options:optArr});
-    svL();dpLists();
-  }else if(a==='removecp'){
-    e.stopPropagation();
-    var cpN=LISTS[li].checkpoints[ci].name;
-    if(!confirm('Remove "'+cpN+'"?'))return;
-    LISTS[li].checkpoints.splice(ci,1);
-    if(LISTS[li].checks){Object.keys(LISTS[li].checks).forEach(function(m){if(LISTS[li].checks[m])delete LISTS[li].checks[m][cpN]})}
-    svL();dpLists();
-  }else if(a==='pick'){
-    e.stopPropagation();
-    showPicker(t,li,mi,ci);
-  }else if(a==='phone'){
-    showContact(LISTS[li].members[mi]);
-  }else if(a==='spin'){
-    openSpinList(LISTS[li].members,LISTS[li].name);
-  }else if(a==='editlist'){
-    editList(li);
-  }else if(a==='deletelist'){
-    deleteList(li);
-  }
-});
+function addCp(li){
+  var name=prompt('Variable name:\n(e.g. "Transportation Home", "Has Materials", "Attendance")');
+  if(!name||!name.trim())return;
+  var opts=prompt('Options separated by commas:\n(e.g. "Bus, Car Pickup, No Show")\n(e.g. "Present, Absent, Late")');
+  if(!opts||!opts.trim())return;
+  var optArr=opts.split(',').map(function(s){return s.trim()}).filter(Boolean);
+  if(!optArr.length)return;
+  if(!LISTS[li].checkpoints)LISTS[li].checkpoints=[];
+  if(!LISTS[li].checks)LISTS[li].checks={};
+  LISTS[li].checkpoints.push({name:name.trim(),options:optArr});
+  svL();dpLists();
+}
+function removeCp(li,ci){
+  var cpN=LISTS[li].checkpoints[ci].name;
+  if(!confirm('Remove "'+cpN+'"?'))return;
+  LISTS[li].checkpoints.splice(ci,1);
+  if(LISTS[li].checks){Object.keys(LISTS[li].checks).forEach(function(m){if(LISTS[li].checks[m])delete LISTS[li].checks[m][cpN]})}
+  svL();dpLists();
+}
 
 function newList(){ei=null;tmp={name:'',members:[]};document.getElementById('mt').textContent='New List';dMList();document.getElementById('ov').classList.add('open')}
 function editList(i){ei=i;tmp={name:LISTS[i].name,members:[...LISTS[i].members]};document.getElementById('mt').textContent='Edit: '+LISTS[i].name;dMList();document.getElementById('ov').classList.add('open')}
@@ -642,8 +592,7 @@ function dMList(){
 function togListMember(s){var i=tmp.members.indexOf(s);if(i>=0)tmp.members.splice(i,1);else tmp.members.push(s);dMList()}
 function saveList(){if(!tmp.name.trim()){alert('Enter a list name.');return}if(!tmp.members.length){alert('Add students.');return}
   if(ei!==null){LISTS[ei].name=tmp.name.trim();LISTS[ei].members=[...tmp.members];
-    if(!LISTS[ei].checkpoints)LISTS[ei].checkpoints=[];
-    if(!LISTS[ei].checks)LISTS[ei].checks={};
+    if(!LISTS[ei].checkpoints)LISTS[ei].checkpoints=[];if(!LISTS[ei].checks)LISTS[ei].checks={};
     Object.keys(LISTS[ei].checks).forEach(function(m){if(!tmp.members.includes(m))delete LISTS[ei].checks[m]});
   }else{LISTS.push({name:tmp.name.trim(),members:[...tmp.members],checkpoints:[],checks:{}})}
   svL();dp();closeM()}
