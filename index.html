@@ -23,6 +23,8 @@ h1{font-size:1.3em;color:#fff;margin-bottom:2px}
 .bar button:hover{border-color:#e8740c;color:#fff}
 .bar button.go{background:#e8740c;border-color:#e8740c;color:#fff;font-weight:bold}
 .bar button.go:hover{background:#c55d0a}
+.bar button.spin{background:#6d2e46;border-color:#6d2e46;color:#fff;font-weight:bold}
+.bar button.spin:hover{background:#8d3e5e}
 .bar button.ex{border-color:#1b7340}.bar button.ex:hover{background:#1b7340;color:#fff}
 .bar button.dn{border-color:#c41e3a}.bar button.dn:hover{background:#c41e3a;color:#fff}
 .bar input{padding:6px 10px;background:#12121f;border:2px solid #333;border-radius:6px;color:#fff;font-size:.82em;width:180px}
@@ -35,10 +37,8 @@ table.sh td{padding:4px 6px;border:1px solid #2a2a42;background:#12121f;text-ali
 table.sh td:first-child{text-align:left;font-weight:bold;position:sticky;left:0;z-index:1;background:#12121f}
 table.sh tr:hover td{background:#1a1a2e}
 table.sh tr:hover td:first-child{background:#1a1a2e}
-table.sh .hdr{font-size:.72em;color:#aaa;font-weight:normal;display:block}
 table.sh .el{color:#e8740c;cursor:pointer;text-decoration:underline}.el:hover{color:#fff}
 table.sh .gr{color:#6d2e46;font-size:.85em}
-/* Modal */
 .ov{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.75);z-index:100;justify-content:center;align-items:flex-start;padding:20px 10px;overflow-y:auto}
 .ov.open{display:flex}
 .mod{background:#1a1a2e;border:2px solid #e8740c;border-radius:12px;width:100%;max-width:760px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.6)}
@@ -91,7 +91,29 @@ table.sh .gr{color:#6d2e46;font-size:.85em}
 .ss-btn{padding:5px 10px;border:2px solid #333;background:#12121f;color:#aaa;border-radius:5px;cursor:pointer;font-size:.78em}
 .ss-btn:hover{border-color:#e8740c;color:#fff}
 .ss-btn.active{background:#1b7340;border-color:#1b7340;color:#fff}
-.col-hdr{writing-mode:vertical-lr;transform:rotate(180deg);font-size:.7em;min-height:80px}
+/* SPINNER */
+.spin-wrap{text-align:center;padding:30px 20px}
+.spin-display{font-size:2.2em;font-weight:bold;color:#e8740c;min-height:60px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;background:#0f0f1a;border-radius:12px;padding:20px;border:3px solid #2a2a42}
+.spin-display.spinning{animation:pulse .15s infinite alternate}
+@keyframes pulse{from{border-color:#2a2a42}to{border-color:#e8740c}}
+.spin-btn{padding:12px 30px;background:#e8740c;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:1.1em;font-weight:bold;margin:0 6px}
+.spin-btn:hover{background:#c55d0a}
+.spin-btn.again{background:#6d2e46}.spin-btn.again:hover{background:#8d3e5e}
+.spin-history{margin-top:16px;font-size:.82em;color:#888;max-height:120px;overflow-y:auto}
+.spin-history div{padding:2px 0;border-bottom:1px solid #1a1a2e}
+/* LISTS PAGE */
+.list-card{background:#12121f;border:2px solid #2a2a42;border-radius:10px;padding:14px;margin-bottom:10px;transition:.2s}
+.list-card:hover{border-color:#444}
+.list-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.list-name{font-weight:bold;color:#fff;font-size:1em}
+.list-count{color:#e8740c;font-size:.85em}
+.list-members{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.list-tag{background:#1a1a2e;border:1px solid #444;border-radius:4px;padding:2px 8px;font-size:.78em;color:#ccc}
+.list-actions{display:flex;gap:6px;margin-top:10px}
+.list-actions button{padding:5px 12px;border:2px solid #333;background:#1a1a2e;color:#ccc;border-radius:5px;cursor:pointer;font-size:.78em}
+.list-actions button:hover{border-color:#e8740c;color:#fff}
+.list-actions button.spin{background:#6d2e46;border-color:#6d2e46;color:#fff}
+.src-label{display:inline-block;background:#2a2a42;border-radius:3px;padding:1px 6px;font-size:.72em;color:#aaa;margin-right:4px}
 </style>
 </head>
 <body>
@@ -104,43 +126,178 @@ table.sh .gr{color:#6d2e46;font-size:.85em}
 <div class="ov" id="ov" onclick="if(event.target===this)closeM()">
 <div class="mod"><div class="mh"><h2 id="mt">Grade</h2><button class="cl" onclick="closeM()">&times;</button></div><div class="mb" id="mb"></div></div>
 </div>
+<div class="ov" id="spinOv" onclick="if(event.target===this)closeSpin()">
+<div class="mod" style="max-width:500px"><div class="mh"><h2 id="spinTitle">Random Name</h2><button class="cl" onclick="closeSpin()">&times;</button></div><div class="mb" id="spinBody"></div></div>
+</div>
 <script>
+const CONTACTS={
+'Ahmed, Fartuma':{p:'413-381-5402',c:'Khalid, Fartun Yare (Mother)'},
+'Al Hasan, Ahmad Mohamad':{p:'413-417-1422',c:'Jassim, Fteim Ahmad (Mother)'},
+'Alicea, Angelina':{p:'603-661-0455',c:'Stevens, Heather (Mother)'},
+'Allende, Nyesha':{p:'413-686-2236',c:'Allende, Sarita (Mother)'},
+'Arbow, Hadija':{p:'413-777-8015',c:'Jibril, Binti (Mother)'},
+'Bartolon Martin, Neish':{p:'413-417-3036',c:'Martin, Irma (Mother)'},
+'Becker, Justin':{p:'617-501-7716',c:'Laurentino, Cristina (Mother)'},
+'Bellamy, Aleya':{p:'413-328-5718',c:'Santana, Amanda (Mother)'},
+'Beltre Andino, Chariely':{p:'413-234-2128',c:'Andino, Dariana (Mother)'},
+'Bosque, Chloe':{p:'413-291-5317',c:'Crosby, Taquira (Mother)'},
+'Bousquet, John Alexander':{p:'413-626-6596',c:'Bousquet, Julie (Mother)'},
+'Branco, Charles':{p:'413-885-5177',c:'Christina, Valle (Mother)'},
+'Burke, Glory':{p:'413-657-3033',c:'Burke, Emma (Mother)'},
+'Burney-Nash, Rubyrose':{p:'413-636-8034',c:'Nash, Lamar (Father)'},
+'Calvente, Deborah':{p:'413-223-7150',c:'Calvente, Katrina (Mother)'},
+'Castillo Cruz, Yariel':{p:'413-419-8369',c:'Cruz Giboyeaux, Wigenid (Mother)'},
+'Castro, Johnny-Yeray':{p:'413-262-7445',c:'Morales, Luz (Mother)'},
+'Cohill, Ramsey':{p:'413-883-6729',c:'Cohill, Latia (Mother)'},
+'Colon, Angel':{p:'413-517-7751',c:'Jessica Gonzalez (Mother)'},
+'Colon, Christian':{p:'413-517-7751',c:'Gonzalez, Jessica (Mother)'},
+'Cordero-Laboy, Dylan':{p:'413-519-9172',c:'Cordero, Melissa (Mother)'},
+'Cox, Eboni':{p:'404-645-9097',c:'Santiago, Duenna (Mother)'},
+'Cruz Berte, Elijah':{p:'413-244-6350',c:'Berte, Andrea (Mother)'},
+'Davila, Edrian':{p:'413-686-7173',c:'Rivera-Felicano, Maritza (Mother)'},
+'Davis, Keyshawn':{p:'617-987-7241',c:'Davis, Latrice (Mother)'},
+'Delgado, Eli':{p:'413-241-4498',c:'Connor, Nancy (Foster Mother)'},
+'Dickey, Lola':{p:'413-693-7012',c:'Natal, Kathy (Mother)'},
+'Edwards, Ricardo':{p:'413-326-2435',c:'Failey, Awilda (Mother)'},
+'Espino, Ayden':{p:'413-330-1655',c:'Rivera, Cynthia (Mother)'},
+'Feliciano, Sophia':{p:'413-273-9057',c:'Perez, Doralis (Mother)'},
+'Ferguson, Lance':{p:'413-657-5382',c:'Stewart, Karrie (Mother)'},
+'Ferguson, Liam':{p:'413-657-5382',c:'Stewart, Karrie (Mother)'},
+'Fernandez, Janiel':{p:'413-222-9951',c:'Comstock, Jamila (Mother)'},
+'Fernandez, Johndiel':{p:'413-784-3327',c:'Fernandez, Juan P (Father)'},
+'Figueroa, Victoria':{p:'413-435-7070',c:'Burgos-Torres, Kathleen (Mother)'},
+'Fountaine, Anastasia':{p:'413-726-4286',c:'Smith, Anna M (Mother)'},
+'Fraichard-Sanchez, Nevaeh':{p:'413-291-1139',c:'Fraichard, Heaven (Mother)'},
+'Gibbs, Zion':{p:'413-275-7162',c:'Gibbs, Juanita (Mother)'},
+'Gonzalez Morales, Eddie':{p:'413-297-3196',c:'Morales Chaj, Eleticia (Mother)'},
+'Grant, Farha':{p:'413-949-3015',c:'Baksh, Helena (Mother)'},
+'Gutierrez Perez, Melany':{p:'413-312-2434',c:'Perez, Fanny (Mother)'},
+'Habash, Salahaddin':{p:'413-735-3186',c:'Habash, Mohammad (Father)'},
+'Henderson-Maldonado, Neyliann':{p:'413-331-9512',c:'Maldonado, Roudmarie (Mother)'},
+'Horta Rodriguez, Khrizpaul':{p:'413-204-6722',c:'Rodriguez, Xiomara (Mother)'},
+'Jacobs, Dametrius':{p:'413-426-7847',c:'Franklin, Kim (Mother)'},
+'Khanal, Richa':{p:'413-657-2733',c:'Khanal, Yashoda (Mother)'},
+'Latney, Emily':{p:'413-241-4192',c:'Clarke, Dolly (Mother)'},
+'Lin-Weinheimer, Kathleen':{p:'413-750-8317',c:'Lin-Weinheimer, Jennifer (Mother)'},
+'Lopez Mejia, Daniel':{p:'413-317-4828',c:'Mejia Perez, Sara (Mother)'},
+'Lopez Mejia, John':{p:'413-317-4828',c:'Mejia, Sara (Mother)'},
+'Lopez Robles, Shayrimar':{p:'413-316-5525',c:'Robles, Adelinette (Mother)'},
+'Lopez, Jendiel':{p:'413-210-4588',c:'Natal, Jennifer (Mother)'},
+'Lopez, Ramon':{p:'646-837-1030',c:'Quinones, Maria (Mother)'},
+'Lopez, Zianely':{p:'860-322-1614',c:'Colon, Vanessa (Mother)'},
+'Luna, Ariella':{p:'413-557-4544',c:'Vega, Johana (Mother)'},
+'Maddox, Amayah':{p:'413-246-7001',c:'Rios, Keyla (Mother)'},
+'Malave, Mikaela':{p:'413-777-7123',c:'Rodriguez, Enid (Grandmother)'},
+'Marrero Olivo, Derek':{p:'413-474-0207',c:'Olivo-Colon, Jessica M. (Mother)'},
+'Marte, Jailyn':{p:'413-686-6122',c:'Vasquez, Elinor (Mother)'},
+'Marte, Jayven':{p:'413-686-6122',c:'Vasquez, Elinor (Mother)'},
+'Martinez-Gedeon, Lailah':{p:'413-219-6464',c:'Gedeon, Andrea (Mother)'},
+'Mateo, Pedro':{p:'413-291-4828',c:'Rivera, Nereida (Mother)'},
+'Mcdonald, Brianna':{p:'413-314-8734',c:'Howe, Nicola O (Mother)'},
+'Medina Torres, Joshua':{p:'413-421-0978',c:'Torres, Yara (Mother)'},
+'Mejia Cruz, Yanelis':{p:'413-206-1536',c:'Cruz, Teresa (Mother)'},
+'Montanez, Messiah':{p:'413-302-6669',c:'Maisonet, Barbara (Mother)'},
+'Morales Gonzalez, Addison':{p:'413-250-4831',c:'Gonzalez, Jaira (Mother)'},
+'Nascimento De Sa, Joao Pedro':{p:'413-331-9263',c:'Nascimento, Patricia (Mother)'},
+'Navarro Gonzalez, Jacob':{p:'413-459-3990',c:'Gonzalez, Senimar (Mother)'},
+'Nguyen, Brian':{p:'413-277-5757',c:'Giang, Lien (Mother)'},
+"Nuri, Jaid'n":{p:'413-237-1489',c:'Crawford, Erica (Mother)'},
+"O'Connell, Liam":{p:'413-221-2789',c:"O'Connell, Zandra (Mother)"},
+'Oquendo, Aalexander':{p:'413-291-6735',c:'Gonzalez, Stephanie (Mother)'},
+'Ortiz, Antonio':{p:'413-886-2466',c:'Rivera, Maria (Mother)'},
+'Pastrana Rodriguez, Yael':{p:'413-504-8129',c:'Rodriguez, Shenda (Mother)'},
+'Patel, Naksh':{p:'929-329-5374',c:'Patel, Sunil (Father)'},
+'Patel, Pihu':{p:'413-321-1220',c:'Patel, Chetankumar (Father)'},
+'Peralta Lozada, Bernardo':{p:'860-477-7523',c:'Lozado, Lydia (Mother)'},
+'Perez, Serenity':{p:'929-236-6656',c:'Perez, Lisbette (Mother)'},
+'Ramos, Michael':{p:'413-328-9105',c:'Ramos, Stephanie (Mother)'},
+'Ramos, Natalia':{p:'413-523-6694',c:'Rivera, Toni Marie (Mother)'},
+'Redding, Khale':{p:'413-218-2517',c:'Barrett, Shamika (Mother)'},
+'Rivera Cardona, Rafael':{p:'413-505-4102',c:'Cardona, Dennise (Mother)'},
+'Rivera, Adonis':{p:'413-693-5228',c:'(Peguero) Mendoza, Suelie (Mother)'},
+'Rivera, Ayden':{p:'413-883-3451',c:'Rodriguez, Marta (Mother)'},
+'Robinson, Danika':{p:'413-342-4925',c:'Ivey, Merna (Mother)'},
+'Roches, Jariah':{p:'413-841-2265',c:'Jurado, Yesenia (Mother)'},
+'Roches, Jezariah':{p:'413-841-2265',c:'Jurado, Yesenia (Mother)'},
+'Rodriguez Lopez, Victor':{p:'413-222-6205',c:'Rivera, Virgenimina (Guardian)'},
+'Rodriguez Vazquez, Dhlyan':{p:'413-409-4563',c:'Vazquez, Suheily (Mother)'},
+'Rodriguez, Leijaniz':{p:'413-821-4454',c:'Burgos, Angelica (Mother)'},
+'Rosa, Kaylen':{p:'413-364-9785',c:'Adilen Negron (Mother)'},
+'Rosario, Noah':{p:'',c:''},
+'Rudd, Sharilyn':{p:'413-883-2174',c:'Burgos, Nelly (Grandmother)'},
+'Rufino, Edynn':{p:'413-218-6720',c:'Rufino, Tiffany (Mother)'},
+'Ruiz Diaz, Natanael':{p:'413-331-8898',c:'Diaz, Roselyn (Mother)'},
+'Santiago Ramos, Adrielyz':{p:'413-799-7606',c:'Ramos, Kimberly (Mother)'},
+'Santiago, Joshua':{p:'413-363-8703',c:'Velez, Tatiana (Mother)'},
+'Santiago, Keylianis':{p:'413-404-0904',c:'Rivera, Lourdes (Mother)'},
+'Semprit, Nehemiah':{p:'413-291-6921',c:'Semprit-Resto, Yaritz (Mother)'},
+'Serrano Diaz, Alween':{p:'413-657-5113',c:'Diaz, Maribel (Mother)'},
+'Sevigne, Dakota':{p:'413-531-3135',c:'Owens, Krystal (Mother)'},
+'Sims-Gamble, Carter':{p:'603-370-1645',c:'Gamble, Judith (Mother)'},
+'Smith, Emirah':{p:'413-330-9251',c:'Smith, Artaviea (Mother)'},
+'Smith, Joi':{p:'413-657-7506',c:'Hull, Chanda (Mother)'},
+'Sunar, Naraj':{p:'413-250-5243',c:'Sunar, Aarita (Mother)'},
+'Swasey, Mya':{p:'413-363-2190',c:'Baker, Desiree (Mother)'},
+'Tamang, Sonu':{p:'413-297-8536',c:'Tamang, Ram (Mother)'},
+'Thapa, Penuel':{p:'413-309-6919',c:'Tamang, Padma (Mother)'},
+'Timori, Bibi':{p:'915-255-8696',c:'Timori, Sharafuddin (Father)'},
+'Torres Jr, Joshua':{p:'413-686-4009',c:'Vazquez, Rhaiza (Mother)'},
+'Velasquez, Jasmine':{p:'413-206-8299',c:'Huynh, Jennifer (Mother)'},
+'Williams, Ahmeir':{p:'413-777-1461',c:'Goolsby, Teneshia (Mother)'},
+'Williams, Jehvon':{p:'413-221-3501',c:'Williams, Leo (Father)'},
+'Zian, Mina':{p:'413-261-8741',c:'Johnson, Mary (Mother)'}
+};
+function getContact(nm){return CONTACTS[nm]||null}
+function phoneIcon(nm){const c=getContact(nm);if(!c||!c.p)return'';return' <span style="cursor:pointer;font-size:.85em;opacity:.4" onclick="event.stopPropagation();showContact(\''+nm.replace(/'/g,"\\'")+'\')" title="Show contact">\u260E</span>'}
+let contactPopup=null;
+function showContact(nm){
+  const c=getContact(nm);if(!c)return;
+  if(contactPopup){contactPopup.remove();contactPopup=null}
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:2px solid #e8740c;border-radius:10px;padding:16px 20px;z-index:200;min-width:280px;box-shadow:0 10px 40px rgba(0,0,0,.7)';
+  d.innerHTML='<div style="font-weight:bold;color:#fff;margin-bottom:8px;font-size:.95em">'+nm+'</div>'
+    +(c.p?'<div style="margin-bottom:4px"><span style="color:#888;font-size:.82em">Phone:</span> <a href="tel:'+c.p+'" style="color:#e8740c;text-decoration:none">'+c.p+'</a></div>':'')
+    +(c.c?'<div style="margin-bottom:8px"><span style="color:#888;font-size:.82em">Contact:</span> <span style="color:#ccc">'+c.c+'</span></div>':'')
+    +'<button onclick="this.parentElement.remove();contactPopup=null" style="background:#333;color:#ccc;border:none;padding:5px 14px;border-radius:4px;cursor:pointer;font-size:.82em">Close</button>';
+  document.body.appendChild(d);contactPopup=d;
+  document.addEventListener('click',function handler(e){if(!d.contains(e.target)){d.remove();contactPopup=null;document.removeEventListener('click',handler)}},{once:false});
+}
+
 // ROSTERS
 const MUSIC8=["Alicea, Angelina","Bartolon Martin, Neish","Bellamy, Aleya","Beltre Andino, Chariely","Branco, Charles","Burke, Glory","Calvente, Deborah","Castro, Johnny-Yeray","Colon, Angel","Figueroa, Victoria","Jacobs, Dametrius","Ortiz, Antonio","Patel, Naksh","Ramos, Natalia","Rivera, Adonis","Rodriguez Lopez, Victor","Rosario, Noah","Smith, Emirah","Student, Tester"];
 const B6A=["Ahmed, Fartuma","Burney-Nash, Rubyrose","Castillo Cruz, Yariel","Feliciano, Sophia","Fernandez, Janiel","Gutierrez Perez, Melany","Henderson-Maldonado, Neyliann","Lin-Weinheimer, Kathleen","Lopez Mejia, John","Lopez Robles, Shayrimar","Pastrana Rodriguez, Yael","Patel, Pihu","Peralta Lozada, Bernardo","Perez, Serenity","Redding, Khale","Rodriguez, Leijaniz","Rudd, Sharilyn","Ruiz Diaz, Natanael","Santiago, Joshua","Semprit, Nehemiah","Sims-Gamble, Carter","Smith, Joi","Swasey, Mya","Student, Tester"];
 const B6B=["Bousquet, John Alexander","Cordero-Laboy, Dylan","Davila, Edrian","Dickey, Lola","Lopez, Zianely","Luna, Ariella","Maddox, Amayah","Marrero Olivo, Derek","O'Connell, Liam","Oquendo, Aalexander","Rufino, Edynn","Sunar, Naraj","Thapa, Penuel","Timori, Bibi","Torres Jr, Joshua","Velasquez, Jasmine","Zian, Mina","Student, Tester"];
 const B7=["Allende, Nyesha","Arbow, Hadija","Becker, Justin","Davis, Keyshawn","Delgado, Eli","Edwards, Ricardo","Ferguson, Lance","Ferguson, Liam","Fountaine, Anastasia","Gonzalez Morales, Eddie","Grant, Farha","Horta Rodriguez, Khrizpaul","Martinez-Gedeon, Lailah","Mateo, Pedro","Medina Torres, Joshua","Navarro Gonzalez, Jacob","Rivera Cardona, Rafael","Robinson, Danika","Roches, Jariah","Rodriguez Vazquez, Dhlyan","Rosa, Kaylen","Santiago Ramos, Adrielyz","Williams, Ahmeir","Williams, Jehvon","Student, Tester"];
 const B8=["Cohill, Ramsey","Colon, Christian","Cox, Eboni","Fraichard-Sanchez, Nevaeh","Khanal, Richa","Latney, Emily","Malave, Mikaela","Marte, Jailyn","Mcdonald, Brianna","Mejia Cruz, Yanelis","Montanez, Messiah","Nascimento De Sa, Joao Pedro","Nuri, Jaid'n","Ramos, Michael","Roches, Jezariah","Santiago, Keylianis","Tamang, Sonu","Student, Tester"];
+const ALL_SOURCES=[{id:'music8',label:'Music 8',roster:MUSIC8},{id:'6a',label:'Band 6A',roster:B6A},{id:'6b',label:'Band 6B',roster:B6B},{id:'7',label:'Band 7',roster:B7},{id:'8',label:'Band 8',roster:B8}];
 
 // RUBRICS
 const PC=[{id:'content',name:'Content & Accuracy',d4:'All facts accurate; original theme connections',d3:'Facts accurate; connects to one theme',d2:'Surface-level; limited connection',d1:'Errors or missing; no connection'},{id:'discussion',name:'Discussion Quality',d4:'Natural; all contribute; smooth',d3:'Clear; all contribute; minor issues',d2:'Stilted; uneven; disorganized',d1:'Disconnected; one dominates'},{id:'script',name:'Script & Prep',d4:'Thorough; clear structure; 5-7 min',d3:'Clear structure; close to target',d2:'Incomplete; timing off',d1:'Minimal prep; way off'},{id:'music',name:'Original Music',d4:'Polished BandLab; intentional choices',d3:'BandLab original; basic choices',d2:'Minimal single loop',d1:'No original music'},{id:'production',name:'Production',d4:'Clear; balanced; professional',d3:'Mostly clear; minor issues',d2:'Noticeable issues; rough',d1:'Hard to hear; no editing'}];
 const PL=[{id:'tone',name:'Tone/Breath',d4:'Always mature focused tone',d3:'Mature; thin only in extremes',d2:'Sometimes mature; thin in extremes',d1:'Occasionally mature; consistently thin',d0:'Rarely mature; always thin'},{id:'pitch',name:'Pitch/Intonation',d4:'Always accurate; very secure',d3:'Accurate w/ isolated error; rare lapses',d2:'Mostly accurate; isolated errors',d1:'Repeated errors; sometimes accurate',d0:'Seldom secure; wrong fingerings'},{id:'artic',name:'Articulation',d4:'Always correct technique/style',d3:'Nearly always correct',d2:'Sometimes correct; consistent flaws',d1:'Occasionally correct; consistent flaws',d0:'No control evident'},{id:'rhythm',name:'Rhythm/Pulse',d4:'Always accurate; secure pulse',d3:'Nearly always; minor errors',d2:'Usually; common errors; erratic',d1:'Sometimes; frequently erratic',d0:'Seldom accurate; unsteady'},{id:'phrase',name:'Phrasing',d4:'Consistently uses dynamics',d3:'Uses dynamics; occasional lapses',d2:'Sometimes; consistent lapses',d1:'Effort but control prevents it',d0:'No phrase shape'}];
 const SCC=[{id:'tone',name:'Tone',d4:'Excellent mature characteristic',d3:'Good w/ minor inconsistencies',d2:'Thin/unfocused some registers',d1:'Weak airy strained'},{id:'tech',name:'Technique',d4:'All notes correct',d3:'1-2 wrong notes',d2:'3-4 wrong notes',d1:'Many wrong; unclear'},{id:'tempo',name:'Tempo',d4:'Steady; with metronome',d3:'Generally steady; minor fluctuations',d2:'Rushing/dragging; inconsistent',d1:'Cannot maintain beat'},{id:'stage',name:'Stage',d4:'Stage 3: Qtr+two 8ths',d3:'Stage 2: Half+two qtrs',d2:'Stage 1: All halves',d1:'Unable to perform'},{id:'oct',name:'Octaves',d4:'2+ octaves correct',d3:'1 octave correct',d2:'Partial (5+ notes)',d1:'Less than 5 notes'}];
-const SCALES=["F Major","B\u266D Major","E\u266D Major","A\u266D Major","D\u266D Major","G Major","C Major","F Chromatic","B\u266D Chromatic"];
 
-// PAGE CONFIG
-// Podcast pages: group-based, single rubric per group, members get same score
-// Band pages: multi-assessment — each "assessment" is a named column; per student per assessment
 const SECS=[{id:'6a',label:'Band 6A',roster:B6A},{id:'6b',label:'Band 6B',roster:B6B},{id:'7',label:'Band 7',roster:B7},{id:'8',label:'Band 8',roster:B8}];
 const PAGES=[
   {id:'superstars',label:'Superstars Podcast',type:'podcast',roster:MUSIC8,crit:PC,hasZero:false},
   {id:'rebellion',label:'Art of Rebellion',type:'podcast',roster:MUSIC8,crit:PC,hasZero:false},
   {id:'playing',label:'Band Playing Test',type:'multi',sections:SECS,crit:PL,hasZero:true},
-  {id:'scales',label:'Band Scales',type:'multi',sections:SECS,crit:SCC,hasZero:false}
+  {id:'scales',label:'Band Scales',type:'multi',sections:SECS,crit:SCC,hasZero:false},
+  {id:'lists',label:'\u2606 Lists & Spinner',type:'lists'}
 ];
 
-let cp='superstars',cs=null;
-// DB structure:
-// podcast: DB[pageId] = [{n:'group name', m:['student',...], sc:{critId:val}, nt:''}]
-// multi:   DB[pageId][sectionId] = [{aname:'Assessment Name', entries:{studentName:{sc:{},nt:''}}}]
-let DB={},ei=null,tmp={},curAsmtIdx=null;
+let cp='superstars',cs=null,DB={},LISTS=[],ei=null,tmp={},curAsmtIdx=null;
+let spinNames=[],spinHistory=[],spinTimer=null;
 
-function init(){const s=localStorage.getItem('mg5');if(s)DB=JSON.parse(s);render()}
+function init(){
+  const s=localStorage.getItem('mg5');if(s)DB=JSON.parse(s);
+  const l=localStorage.getItem('mg5lists');if(l)LISTS=JSON.parse(l);
+  render();
+}
 function sv(){localStorage.setItem('mg5',JSON.stringify(DB))}
+function svL(){localStorage.setItem('mg5lists',JSON.stringify(LISTS))}
 function pg(){return PAGES.find(p=>p.id===cp)}
-function getRoster(){const p=pg();if(p.sections){const s=cs||p.sections[0].id;return p.sections.find(x=>x.id===s).roster}return p.roster}
-function getStore(){const p=pg();if(p.type==='podcast'){if(!DB[p.id])DB[p.id]=[];return DB[p.id]}
-if(!DB[p.id])DB[p.id]={};const sid=cs||p.sections[0].id;if(!DB[p.id][sid])DB[p.id][sid]=[];return DB[p.id][sid]}
+function getRoster(){const p=pg();if(p.sections){const s=cs||p.sections[0].id;return p.sections.find(x=>x.id===s).roster}return p.roster||[]}
+function getStore(){const p=pg();if(p.type==='podcast'){if(!DB[p.id])DB[p.id]=[];return DB[p.id]}if(p.type==='multi'){if(!DB[p.id])DB[p.id]={};const sid=cs||p.sections[0].id;if(!DB[p.id][sid])DB[p.id][sid]=[];return DB[p.id][sid]}return[]}
 function avg(sc){const v=Object.values(sc);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
 function scC(v){if(v===undefined||v===null)return'#444';if(v>=3.5)return'#1b7340';if(v>=2.5)return'#2e5090';if(v>=1.5)return'#b8860b';if(v>=0.5)return'#c41e3a';return'#660'}
 function asgd(st,ex){const s=new Set();st.forEach((g,i)=>{if(i!==ex)(g.m||[]).forEach(x=>s.add(x))});return s}
@@ -151,49 +308,42 @@ function sp(id){cp=id;const p=pg();cs=p.sections?p.sections[0].id:null;render()}
 function ss(id){cs=id;dp()}
 
 function dp(){
-const p=pg(),el=document.getElementById('pageArea');let h='';
+const p=pg(),el=document.getElementById('pageArea');
+if(p.type==='lists'){dpLists();return}
+let h='';
 if(p.sections){if(!cs)cs=p.sections[0].id;h+=`<div class="stabs">${p.sections.map(s=>`<div class="stab ${cs===s.id?'active':''}" onclick="ss('${s.id}')">${s.label} (${s.roster.length})</div>`).join('')}</div>`}
 if(p.type==='podcast'){
-h+=`<div class="bar"><button class="go" onclick="oN()">+ Grade a Group</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
+h+=`<div class="bar"><button class="go" onclick="oN()">+ Grade a Group</button><button class="spin" onclick="openSpin()">&#127922; Spin</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
 h+=`<div class="sw">${bSPodcast()}</div>`;
 } else {
-h+=`<div class="bar"><button class="go" onclick="newAsmt()">+ New Assessment</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
+h+=`<div class="bar"><button class="go" onclick="newAsmt()">+ New Assessment</button><button class="spin" onclick="openSpin()">&#127922; Spin</button><button class="ex" onclick="eC()">Export CSV</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"><button class="dn" onclick="clr()">Clear Page</button></div>`;
 h+=`<div class="sw">${bSMulti()}</div>`;
 }
 el.innerHTML=h}
-
 // === PODCAST SPREADSHEET ===
 function bSPodcast(){
 const st=getStore(),ro=getRoster(),cr=pg().crit;
 let h=`<table class="sh"><thead><tr><th>Student</th><th>Group</th>`;
 cr.forEach(c=>h+=`<th>${c.name}</th>`);h+=`<th>Avg</th><th>Notes</th></tr></thead><tbody>`;
 ro.forEach(nm=>{const g=st.find(x=>x.m&&x.m.includes(nm));const sc=g?g.sc:{};const a=g?avg(g.sc):null;const nt=g?g.nt:'';
-h+=`<tr><td>${nm}</td><td class="gr">${g?`<span class="el" onclick="eE('${esc(g.n)}')">${g.n}</span>`:'\u2014'}</td>`;
+h+=`<tr><td>${nm}${phoneIcon(nm)}</td><td class="gr">${g?`<span class="el" onclick="eE('${esc(g.n)}')">${g.n}</span>`:'\u2014'}</td>`;
 cr.forEach(c=>{const v=sc[c.id];h+=`<td style="color:${scC(v)};font-weight:bold">${v?v.toFixed(1):'\u2014'}</td>`});
 h+=`<td style="color:#e8740c;font-weight:bold">${a!==null?a.toFixed(2):'\u2014'}</td><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;color:#777;font-size:.88em" title="${(nt||'').replace(/"/g,'&quot;')}">${nt||''}</td></tr>`});
 return h+`</tbody></table>`}
 
 // === MULTI-ASSESSMENT SPREADSHEET ===
 function bSMulti(){
-const st=getStore(),ro=getRoster(),cr=pg().crit;
-// Each entry in st is: {aname:'...', entries:{studentName:{sc:{},nt:''}}}
-if(!st.length) return `<table class="sh"><thead><tr><th>Student</th><th style="color:#555">No assessments yet. Click "+ New Assessment" to start.</th></tr></thead></table>`;
-// Columns: Student | [Asmt1 Avg] | [Asmt2 Avg] | ...
+const st=getStore(),ro=getRoster();
+if(!st.length)return`<table class="sh"><thead><tr><th>Student</th><th style="color:#555">No assessments yet.</th></tr></thead></table>`;
 let h=`<table class="sh"><thead><tr><th>Student</th>`;
 st.forEach((a,i)=>h+=`<th><span class="el" onclick="editAsmt(${i})">${a.aname}</span></th>`);
 h+=`</tr></thead><tbody>`;
-ro.forEach(nm=>{
-h+=`<tr><td>${nm}</td>`;
-st.forEach(a=>{
-const e=a.entries&&a.entries[nm];
-const sc=e?e.sc:{};const av=e?avg(e.sc):null;
-h+=`<td style="color:${scC(av)};font-weight:bold">${av!==null?av.toFixed(2):'\u2014'}</td>`;
-});
-h+=`</tr>`});
+ro.forEach(nm=>{h+=`<tr><td>${nm}${phoneIcon(nm)}</td>`;st.forEach(a=>{const e=a.entries&&a.entries[nm];const av=e?avg(e.sc):null;
+h+=`<td style="color:${scC(av)};font-weight:bold">${av!==null?av.toFixed(2):'\u2014'}</td>`});h+=`</tr>`});
 return h+`</tbody></table>`}
 
 // === PODCAST MODAL ===
-function oN(){const p=pg();if(p.type==='podcast'){ei=null;tmp={n:'',m:[],sc:{},nt:''};document.getElementById('mt').textContent='Grade a Group';dMPod();document.getElementById('ov').classList.add('open')}else newAsmt()}
+function oN(){ei=null;tmp={n:'',m:[],sc:{},nt:''};document.getElementById('mt').textContent='Grade a Group';dMPod();document.getElementById('ov').classList.add('open')}
 function eE(gn){const st=getStore();const i=st.findIndex(g=>g.n===gn);if(i<0)return;ei=i;const g=st[i];tmp={n:g.n,m:[...g.m],sc:{...g.sc},nt:g.nt||''};document.getElementById('mt').textContent='Edit: '+g.n;dMPod();document.getElementById('ov').classList.add('open')}
 function closeM(){document.getElementById('ov').classList.remove('open');ei=null;curAsmtIdx=null}
 
@@ -202,122 +352,166 @@ const st=getStore(),cr=pg().crit,el=document.getElementById('mb'),tk=asgd(st,ei)
 let h=`<div class="sl">Group Name</div><input class="gi" id="mgn" value="${tmp.n}" oninput="tmp.n=this.value" placeholder="Group name...">`;
 h+=`<div class="pl">Click to assign/remove:</div><div class="pks">`;
 getRoster().forEach(s=>{const me=tmp.m.includes(s);const ot=!me&&tk.has(s);h+=`<button class="pk ${me?'in':ot?'tk':''}" ${ot?'disabled':''} onclick="${ot?'':`mt('${esc(s)}')`}">${s}</button>`});
-h+=`</div>`;h+=buildRubric(cr,pg().hasZero);
+h+=`</div>`;h+=buildRubric(cr,pg().hasZero,'tmp.sc','dMPod');
 h+=`<div class="nm"><label>Notes</label><textarea id="mnt" oninput="tmp.nt=this.value">${tmp.nt||''}</textarea></div>`;
 const a=avg(tmp.sc);h+=`<div class="ma"><div class="sm">Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
 h+=`<div class="mf">`;if(ei!==null)h+=`<button class="dl" onclick="delPod()">Delete</button>`;
-h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="savePod()">Save</button></div>`;
-el.innerHTML=h}
-
+h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="savePod()">Save</button></div>`;el.innerHTML=h}
 function mt(s){const i=tmp.m.indexOf(s);if(i>=0)tmp.m.splice(i,1);else tmp.m.push(s);dMPod()}
 function savePod(){if(!tmp.n.trim()){alert('Group name.');return}if(!tmp.m.length){alert('Assign students.');return}
 const st=getStore();const o={n:tmp.n.trim(),m:[...tmp.m],sc:{...tmp.sc},nt:tmp.nt};if(ei!==null)st[ei]=o;else st.push(o);sv();dp();closeM()}
 function delPod(){if(!confirm('Delete?'))return;getStore().splice(ei,1);sv();dp();closeM()}
 
 // === MULTI-ASSESSMENT MODAL ===
-function newAsmt(){
-curAsmtIdx=null;
-tmp={aname:'',entries:{}};
-document.getElementById('mt').textContent='New Assessment';
-dMMulti();document.getElementById('ov').classList.add('open')
-}
-function editAsmt(idx){
-curAsmtIdx=idx;const st=getStore();const a=st[idx];
-tmp={aname:a.aname,entries:JSON.parse(JSON.stringify(a.entries||{}))};
-document.getElementById('mt').textContent='Edit: '+a.aname;
-// Pick first student that has data, or null
-tmp._curStudent=null;
-dMMulti();document.getElementById('ov').classList.add('open')
-}
+function newAsmt(){curAsmtIdx=null;tmp={aname:'',entries:{},_curStudent:null};document.getElementById('mt').textContent='New Assessment';dMMulti();document.getElementById('ov').classList.add('open')}
+function editAsmt(idx){curAsmtIdx=idx;const st=getStore();const a=st[idx];tmp={aname:a.aname,entries:JSON.parse(JSON.stringify(a.entries||{})),_curStudent:null};document.getElementById('mt').textContent='Edit: '+a.aname;dMMulti();document.getElementById('ov').classList.add('open')}
 
 function dMMulti(){
 const cr=pg().crit,el=document.getElementById('mb'),ro=getRoster();
-let h=`<div class="sl">Assessment Name</div><input class="gi" value="${tmp.aname}" oninput="tmp.aname=this.value" placeholder="e.g. Playing Test 1, B♭ Scale, Concert Rep...">`;
-h+=`<div class="sl">Select Student to Grade</div><div class="pks">`;
-ro.forEach(s=>{const has=tmp.entries[s]&&Object.keys(tmp.entries[s].sc||{}).length;
-const sel=tmp._curStudent===s;
-h+=`<button class="pk ${sel?'sel':has?'in':''}" onclick="pickMS('${esc(s)}')">${s.split(',')[0]}${has?' \u2713':''}</button>`});
-h+=`</div>`;
-if(tmp._curStudent){
-const sn=tmp._curStudent;if(!tmp.entries[sn])tmp.entries[sn]={sc:{},nt:''};
-const se=tmp.entries[sn];
-h+=`<div class="rt-title">Rubric for ${sn}</div>`;
-// Build rubric using se.sc as the score source
-h+=buildRubricFor(cr,pg().hasZero,sn);
+let h=`<div class="sl">Assessment Name</div><input class="gi" value="${tmp.aname}" oninput="tmp.aname=this.value" placeholder="e.g. Playing Test 1, Concert Rep...">`;
+h+=`<div class="sl">Select Student</div><div class="pks">`;
+ro.forEach(s=>{const has=tmp.entries[s]&&Object.keys(tmp.entries[s].sc||{}).length;const sel=tmp._curStudent===s;
+h+=`<button class="pk ${sel?'sel':has?'in':''}" onclick="pickMS('${esc(s)}')">${s.split(',')[0]}${has?' \u2713':''}</button>`});h+=`</div>`;
+if(tmp._curStudent){const sn=tmp._curStudent;if(!tmp.entries[sn])tmp.entries[sn]={sc:{},nt:''};const se=tmp.entries[sn];
+h+=`<div class="rt-title">Rubric for ${sn}</div>`;h+=buildRubricFor(cr,pg().hasZero,sn);
 h+=`<div class="nm"><label>Notes for ${sn.split(',')[0]}</label><textarea oninput="tmp.entries['${esc(sn)}'].nt=this.value">${se.nt||''}</textarea></div>`;
-const a=avg(se.sc);h+=`<div class="ma"><div class="sm">${sn.split(',')[0]} Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`;
-}
+const a=avg(se.sc);h+=`<div class="ma"><div class="sm">${sn.split(',')[0]} Average</div><div class="big">${a!==null?a.toFixed(2):'\u2014'}</div></div>`}
 h+=`<div class="mf">`;if(curAsmtIdx!==null)h+=`<button class="dl" onclick="delAsmt()">Delete Assessment</button>`;
-h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveAsmt()">Save</button></div>`;
-el.innerHTML=h}
-
+h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveAsmt()">Save</button></div>`;el.innerHTML=h}
 function pickMS(s){tmp._curStudent=tmp._curStudent===s?null:s;dMMulti()}
+function saveAsmt(){if(!tmp.aname.trim()){alert('Assessment name.');return}const clean={};Object.keys(tmp.entries).forEach(k=>{if(Object.keys(tmp.entries[k].sc||{}).length)clean[k]=tmp.entries[k]});
+const st=getStore();const o={aname:tmp.aname.trim(),entries:clean};if(curAsmtIdx!==null)st[curAsmtIdx]=o;else st.push(o);sv();dp();closeM()}
+function delAsmt(){if(!confirm('Delete?'))return;getStore().splice(curAsmtIdx,1);sv();dp();closeM()}
 
-function buildRubric(cr,hz){
+// === RUBRIC BUILDERS ===
+function buildRubric(cr,hz,scPath,redrawFn){
 const lv=hz?[4,3,2,1,0]:[4,3,2,1];
 let h=`<div class="rt-title">Click a cell to score, fine-tune with slider</div><table class="rt"><thead><tr><th></th>`;
-if(hz)h+=`<th>4</th><th>3</th><th>2</th><th>1</th><th>0</th>`;else h+=`<th>4</th><th>3</th><th>2</th><th>1</th>`;
-h+=`</tr></thead><tbody>`;
+lv.forEach(n=>h+=`<th>${n}</th>`);h+=`</tr></thead><tbody>`;
 cr.forEach(c=>{const v=tmp.sc[c.id];const vn=v!==undefined&&v!==null?v:-1;const base=vn>=0?Math.ceil(vn-0.001):99;
-h+=`<tr><td>${c.name}</td>`;lv.forEach(n=>{const hi=(vn>=0&&Math.ceil(vn-0.001)===n)?` s${n}`:'';h+=`<td class="pick${hi}" onclick="mB('${c.id}',${n})">${c['d'+n]||''}</td>`});h+=`</tr>`;
+h+=`<tr><td>${c.name}</td>`;lv.forEach(n=>{const hi=(vn>=0&&Math.ceil(vn-0.001)===n)?` s${n}`:'';h+=`<td class="pick${hi}" onclick="mB('${c.id}',${n},'${redrawFn}')">${c['d'+n]||''}</td>`});h+=`</tr>`;
 if(vn>=0){const mn=hz?(base===0?0:base-1+0.1):(base===1?1:base-1+0.1);
-h+=`<tr><td colspan="${lv.length+1}"><div class="mp"><span class="lbl">${c.name}:</span><span class="val" id="mpv_${c.id}">${vn.toFixed(1)}</span><input type="range" min="${mn}" max="${base}" step="0.1" value="${vn}" oninput="mS('${c.id}',this.value)"><button class="clr" onclick="mC('${c.id}')">Clear</button></div></td></tr>`}});
+h+=`<tr><td colspan="${lv.length+1}"><div class="mp"><span class="lbl">${c.name}:</span><span class="val" id="mpv_${c.id}">${vn.toFixed(1)}</span><input type="range" min="${mn}" max="${base}" step="0.1" value="${vn}" oninput="mS('${c.id}',this.value)"><button class="clr" onclick="mC('${c.id}','${redrawFn}')">Clear</button></div></td></tr>`}});
 return h+`</tbody></table>`}
-
 function buildRubricFor(cr,hz,sn){
 const lv=hz?[4,3,2,1,0]:[4,3,2,1];const se=tmp.entries[sn];
-let h=`<table class="rt"><thead><tr><th></th>`;
-if(hz)h+=`<th>4</th><th>3</th><th>2</th><th>1</th><th>0</th>`;else h+=`<th>4</th><th>3</th><th>2</th><th>1</th>`;
-h+=`</tr></thead><tbody>`;
+let h=`<table class="rt"><thead><tr><th></th>`;lv.forEach(n=>h+=`<th>${n}</th>`);h+=`</tr></thead><tbody>`;
 cr.forEach(c=>{const v=se.sc[c.id];const vn=v!==undefined&&v!==null?v:-1;const base=vn>=0?Math.ceil(vn-0.001):99;
 h+=`<tr><td>${c.name}</td>`;lv.forEach(n=>{const hi=(vn>=0&&Math.ceil(vn-0.001)===n)?` s${n}`:'';h+=`<td class="pick${hi}" onclick="mBM('${esc(sn)}','${c.id}',${n})">${c['d'+n]||''}</td>`});h+=`</tr>`;
 if(vn>=0){const mn=hz?(base===0?0:base-1+0.1):(base===1?1:base-1+0.1);
 h+=`<tr><td colspan="${lv.length+1}"><div class="mp"><span class="lbl">${c.name}:</span><span class="val" id="mpv_${c.id}">${vn.toFixed(1)}</span><input type="range" min="${mn}" max="${base}" step="0.1" value="${vn}" oninput="mSM('${esc(sn)}','${c.id}',this.value)"><button class="clr" onclick="mCM('${esc(sn)}','${c.id}')">Clear</button></div></td></tr>`}});
 return h+`</tbody></table>`}
-
-// Podcast rubric handlers
-function mB(c,n){tmp.sc[c]=n;dMPod()}
+function mB(c,n,fn){tmp.sc[c]=n;window[fn]()}
 function mS(c,v){tmp.sc[c]=parseFloat(parseFloat(v).toFixed(1));const e=document.getElementById('mpv_'+c);if(e)e.textContent=tmp.sc[c].toFixed(1);const a=avg(tmp.sc);const ae=document.querySelector('.ma .big');if(ae)ae.textContent=a!==null?a.toFixed(2):'\u2014'}
-function mC(c){delete tmp.sc[c];dMPod()}
-// Multi rubric handlers
+function mC(c,fn){delete tmp.sc[c];window[fn]()}
 function mBM(sn,c,n){if(!tmp.entries[sn])tmp.entries[sn]={sc:{},nt:''};tmp.entries[sn].sc[c]=n;dMMulti()}
 function mSM(sn,c,v){if(!tmp.entries[sn])return;tmp.entries[sn].sc[c]=parseFloat(parseFloat(v).toFixed(1));const e=document.getElementById('mpv_'+c);if(e)e.textContent=tmp.entries[sn].sc[c].toFixed(1);const a=avg(tmp.entries[sn].sc);const ae=document.querySelector('.ma .big');if(ae)ae.textContent=a!==null?a.toFixed(2):'\u2014'}
 function mCM(sn,c){if(!tmp.entries[sn])return;delete tmp.entries[sn].sc[c];dMMulti()}
+// === SPINNER ===
+function openSpin(){
+  spinNames=[...getRoster()].filter(n=>n!=='Student, Tester');
+  spinHistory=[];
+  document.getElementById('spinTitle').textContent='Random Name — '+(pg().sections?(SECS.find(s=>s.id===cs)||{}).label||'':pg().label);
+  drawSpin();document.getElementById('spinOv').classList.add('open');
+}
+function openSpinList(names,title){
+  spinNames=[...names];spinHistory=[];
+  document.getElementById('spinTitle').textContent='Random Name — '+title;
+  drawSpin();document.getElementById('spinOv').classList.add('open');
+}
+function closeSpin(){document.getElementById('spinOv').classList.remove('open');if(spinTimer)clearInterval(spinTimer)}
+function drawSpin(){
+  const el=document.getElementById('spinBody');
+  let h=`<div class="spin-wrap">`;
+  h+=`<div class="spin-display" id="spinDisp">Press Spin!</div>`;
+  h+=`<div><button class="spin-btn" onclick="doSpin()">&#127922; SPIN</button>`;
+  h+=`<button class="spin-btn again" onclick="resetSpin()">Reset</button></div>`;
+  if(spinHistory.length){h+=`<div class="spin-history"><strong>History:</strong>`;spinHistory.forEach((n,i)=>h+=`<div>${i+1}. ${n}</div>`);h+=`</div>`}
+  h+=`<div style="margin-top:10px;font-size:.78em;color:#555">${spinNames.length} names remaining</div>`;
+  h+=`</div>`;el.innerHTML=h;
+}
+function doSpin(){
+  if(!spinNames.length){document.getElementById('spinDisp').textContent='No names left!';return}
+  const disp=document.getElementById('spinDisp');
+  disp.classList.add('spinning');
+  let count=0;const total=20+Math.floor(Math.random()*10);
+  if(spinTimer)clearInterval(spinTimer);
+  spinTimer=setInterval(()=>{
+    disp.textContent=spinNames[Math.floor(Math.random()*spinNames.length)];
+    count++;if(count>=total){
+      clearInterval(spinTimer);spinTimer=null;
+      const idx=Math.floor(Math.random()*spinNames.length);
+      const pick=spinNames.splice(idx,1)[0];
+      disp.textContent=pick;disp.classList.remove('spinning');
+      spinHistory.push(pick);drawSpin();
+      document.getElementById('spinDisp').textContent=pick;
+      document.getElementById('spinDisp').style.color='#1b7340';
+      setTimeout(()=>{const d=document.getElementById('spinDisp');if(d)d.style.color='#e8740c'},1500);
+    }
+  },80);
+}
+function resetSpin(){
+  const p=pg();
+  if(p&&p.type!=='lists')spinNames=[...getRoster()].filter(n=>n!=='Student, Tester');
+  else{/* handled by caller */}
+  spinHistory=[];drawSpin();
+}
 
-function saveAsmt(){
-if(!tmp.aname.trim()){alert('Enter an assessment name.');return}
-// Clean entries: remove students with no scores
-const clean={};Object.keys(tmp.entries).forEach(k=>{if(Object.keys(tmp.entries[k].sc||{}).length)clean[k]=tmp.entries[k]});
-const st=getStore();const o={aname:tmp.aname.trim(),entries:clean};
-if(curAsmtIdx!==null)st[curAsmtIdx]=o;else st.push(o);
-sv();dp();closeM()}
-function delAsmt(){if(!confirm('Delete this assessment?'))return;getStore().splice(curAsmtIdx,1);sv();dp();closeM()}
+// === LISTS PAGE ===
+function dpLists(){
+  const el=document.getElementById('pageArea');
+  let h=`<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>`;
+  if(!LISTS.length){h+=`<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list to pull students from any class.</div>`}
+  else{LISTS.forEach((lst,i)=>{
+    h+=`<div class="list-card"><div class="list-header" onclick="toggleListExpand(${i})"><div><span class="list-name">${lst.name}</span></div><span class="list-count">${lst.members.length} students</span></div>`;
+    h+=`<div class="list-members">${lst.members.map(m=>{const src=ALL_SOURCES.find(s=>s.roster.includes(m));return`<span class="list-tag">${src?'<span class="src-label">'+src.label+'</span>':''}${m}</span>`}).join('')}</div>`;
+    h+=`<div class="list-actions"><button class="spin" onclick="openSpinList(LISTS[${i}].members,LISTS[${i}].name)">&#127922; Spin</button><button onclick="editList(${i})">Edit</button><button onclick="deleteList(${i})">Delete</button></div></div>`;
+  })}
+  el.innerHTML=h;
+}
+function newList(){ei=null;tmp={name:'',members:[]};document.getElementById('mt').textContent='New List';dMList();document.getElementById('ov').classList.add('open')}
+function editList(i){ei=i;tmp={name:LISTS[i].name,members:[...LISTS[i].members]};document.getElementById('mt').textContent='Edit: '+LISTS[i].name;dMList();document.getElementById('ov').classList.add('open')}
+function deleteList(i){if(!confirm('Delete "'+LISTS[i].name+'"?'))return;LISTS.splice(i,1);svL();dpLists()}
 
-// EXPORT
+function dMList(){
+  const el=document.getElementById('mb');
+  let h=`<div class="sl">List Name</div><input class="gi" value="${tmp.name}" oninput="tmp.name=this.value" placeholder="e.g. Group Lessons - Trumpet, Sectionals...">`;
+  ALL_SOURCES.forEach(src=>{
+    h+=`<div class="sl" style="margin-top:10px">${src.label}</div><div class="pks">`;
+    src.roster.forEach(s=>{if(s==='Student, Tester')return;const me=tmp.members.includes(s);
+    h+=`<button class="pk ${me?'in':''}" onclick="togListMember('${esc(s)}')">${s.split(',')[0]}</button>`});
+    h+=`</div>`;
+  });
+  h+=`<div style="margin-top:10px;font-size:.82em;color:#888">${tmp.members.length} students selected</div>`;
+  h+=`<div class="mf" style="margin-top:12px">`;
+  if(ei!==null)h+=`<button class="dl" onclick="deleteList(${ei});closeM()">Delete</button>`;
+  h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveList()">Save</button></div>`;
+  el.innerHTML=h;
+}
+function togListMember(s){const i=tmp.members.indexOf(s);if(i>=0)tmp.members.splice(i,1);else tmp.members.push(s);dMList()}
+function saveList(){if(!tmp.name.trim()){alert('Enter a list name.');return}if(!tmp.members.length){alert('Add students.');return}
+const o={name:tmp.name.trim(),members:[...tmp.members]};if(ei!==null)LISTS[ei]=o;else LISTS.push(o);svL();dp();closeM()}
+
+// === EXPORT ===
 function eC(){
 const p=pg(),cr=p.crit;let csv='';
 if(p.type==='podcast'){
 csv='Student,Group,'+cr.map(c=>c.name).join(',')+',Average,Notes\n';
 const st=getStore();getRoster().forEach(nm=>{const g=st.find(x=>x.m&&x.m.includes(nm));const sc=g?g.sc:{};const a=g?avg(g.sc):null;const nt=(g&&g.nt||'').replace(/"/g,'""').replace(/\n/g,' ');
 csv+=`"${nm}","${g?g.n:''}",${cr.map(c=>sc[c.id]||'').join(',')},${a!==null?a.toFixed(2):''},"${nt}"\n`})
-} else {
-// Multi: section, student, then one avg column per assessment
-if(p.sections){
-p.sections.forEach(sec=>{
-const st=(DB[p.id]&&DB[p.id][sec.id])||[];
-if(!st.length)return;
-csv+=`${sec.label}\n`;
-csv+='Student,'+st.map(a=>a.aname+' (Avg)').join(',')+','+st.map(a=>a.aname+' (Notes)').join(',')+'\n';
-sec.roster.forEach(nm=>{
-csv+=`"${nm}"`;
-st.forEach(a=>{const e=a.entries&&a.entries[nm];const av=e?avg(e.sc):null;csv+=`,${av!==null?av.toFixed(2):''}`});
-st.forEach(a=>{const e=a.entries&&a.entries[nm];const nt=(e&&e.nt||'').replace(/"/g,'""').replace(/\n/g,' ');csv+=`,"${nt}"`});
-csv+='\n'});csv+='\n'})
-}}
+} else if(p.type==='multi'){
+if(p.sections){p.sections.forEach(sec=>{const st=(DB[p.id]&&DB[p.id][sec.id])||[];if(!st.length)return;
+csv+=`${sec.label}\nStudent,${st.map(a=>a.aname).join(',')}\n`;
+sec.roster.forEach(nm=>{csv+=`"${nm}"`;st.forEach(a=>{const e=a.entries&&a.entries[nm];const av=e?avg(e.sc):null;csv+=`,${av!==null?av.toFixed(2):''}`});csv+='\n'});csv+='\n'})}
+}
+if(!csv){alert('Nothing to export.');return}
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=`${cp}_grades_${cs||'all'}_${new Date().toISOString().slice(0,10)}.csv`;a.click()}
-function eJ(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}));a.download=`grader_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
-function iJ(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{if(confirm('Replace ALL data?')){DB=JSON.parse(ev.target.result);sv();render()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
+function eJ(){
+const exp={DB,LISTS};
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(exp,null,2)],{type:'application/json'}));a.download=`grader_backup_${new Date().toISOString().slice(0,10)}.json`;a.click()}
+function iJ(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(confirm('Replace ALL data?')){if(d.DB)DB=d.DB;else DB=d;if(d.LISTS)LISTS=d.LISTS;sv();svL();render()}}catch(x){alert('Bad file')}};r.readAsText(f);e.target.value=''}
 function clr(){if(!confirm('Clear '+pg().label+(cs?' ('+cs+')':'')+'?'))return;const p=pg();if(p.sections){if(DB[p.id])DB[p.id][cs]=[]}else DB[p.id]=[];sv();dp()}
+
 init();
 </script>
 </body>
