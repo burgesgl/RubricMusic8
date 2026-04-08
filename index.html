@@ -458,9 +458,14 @@ function resetSpin(){
 }
 
 // === LISTS PAGE ===
+// Checkpoint structure: {name:'Bus Home', options:['Bus','Car Pickup','No Show'], colors:['#1b7340','#2e5090','#c41e3a']}
+// Checks: lst.checks[studentName][checkpointName] = 'Bus' (the selected option string, or '' for unset)
+var CP_COLORS=['#1b7340','#2e5090','#e8740c','#6d2e46','#b8860b','#c41e3a','#555','#4a90d9'];
+var CP_ICONS=['&#x2705;','&#x1F699;','&#x1F3E0;','&#x274C;','&#x26A0;','&#x2B50;','&#x1F3B5;','&#x1F4DE;'];
+
 function dpLists(){
-  const el=document.getElementById('pageArea');
-  let h='<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById(\'imp\').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>';
+  var el=document.getElementById('pageArea');
+  var h='<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById(\'imp\').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>';
   if(!LISTS.length){h+='<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list for field trips, events, group lessons, etc.</div>'}
   else{LISTS.forEach(function(lst,li){
     if(!lst.checkpoints)lst.checkpoints=[];
@@ -472,73 +477,90 @@ function dpLists(){
     h+='<button class="pk" style="font-size:.75em;padding:3px 8px" data-action="editlist" data-li="'+li+'">Edit</button>';
     h+='<button class="pk" style="font-size:.75em;padding:3px 8px;border-color:#c41e3a" data-action="deletelist" data-li="'+li+'">Delete</button>';
     h+='</div></div>';
-
-    // Checkpoint bar
+    // Checkpoint summary + add button
     h+='<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">';
-    h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" data-action="addcp" data-li="'+li+'">+ Add Checkpoint</button>';
+    h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" data-action="addcp" data-li="'+li+'">+ Add Variable</button>';
     lst.checkpoints.forEach(function(cp,ci){
       var total=lst.members.length;
-      var checked=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp]}).length;
-      var pct=total?Math.round(checked/total*100):0;
+      var filled=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp.name]}).length;
+      var pct=total?Math.round(filled/total*100):0;
       var col=pct===100?'#1b7340':pct>=75?'#2e5090':pct>=50?'#b8860b':'#c41e3a';
-      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp+': '+checked+'/'+total+' ('+pct+'%)</span>';
+      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp.name+': '+filled+'/'+total+' ('+pct+'%)</span>';
     });
     h+='</div>';
-
-    // Student table
+    // Table
     if(lst.members.length){
       h+='<div style="overflow-x:auto;margin-top:8px"><table class="sh" style="font-size:.74em"><thead><tr><th style="text-align:left">Student</th><th>&#x260E;</th>';
       lst.checkpoints.forEach(function(cp,ci){
-        h+='<th style="min-width:60px;cursor:pointer" data-action="toggleall" data-li="'+li+'" data-ci="'+ci+'">'+cp+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove">&#x2715;</span></th>';
+        h+='<th style="min-width:80px">'+cp.name+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove variable">&#x2715;</span></th>';
       });
       h+='</tr></thead><tbody>';
       lst.members.forEach(function(m,mi){
         var ct=getContact(m);
         h+='<tr><td style="text-align:left">'+m+'</td>';
-        h+='<td style="text-align:center">'+(ct&&ct.p?'<span style="cursor:pointer;opacity:.5" data-action="phone" data-mi="'+mi+'" data-li="'+li+'">&#x260E;</span>':'')+'</td>';
+        h+='<td style="text-align:center">'+(ct&&ct.p?'<span style="cursor:pointer;opacity:.5" data-action="phone" data-li="'+li+'" data-mi="'+mi+'">&#x260E;</span>':'')+'</td>';
         lst.checkpoints.forEach(function(cp,ci){
-          var chk=lst.checks[m]&&lst.checks[m][cp];
-          h+='<td style="text-align:center;cursor:pointer;color:'+(chk?'#1b7340':'#555')+';font-size:1.1em" data-action="check" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+(chk?'&#x2705;':'&#x2B1C;')+'</td>';
+          var val=(lst.checks[m]&&lst.checks[m][cp.name])||'';
+          var optIdx=val?cp.options.indexOf(val):-1;
+          var bgCol=optIdx>=0?CP_COLORS[optIdx%CP_COLORS.length]:'transparent';
+          var border=val?bgCol:'#333';
+          var display=val||'&#x2B1C;';
+          h+='<td style="text-align:center;cursor:pointer;font-size:.82em;background:'+(val?bgCol+'33':'transparent')+';color:'+(val?bgCol:'#555')+';border:1px solid #2a2a42" data-action="cycle" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+display+'</td>';
         });
         h+='</tr>';
       });
       h+='</tbody></table></div>';
+      // Legend for each checkpoint
+      if(lst.checkpoints.length){
+        h+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:8px">';
+        lst.checkpoints.forEach(function(cp,ci){
+          h+='<div style="font-size:.72em;color:#888"><strong>'+cp.name+':</strong> ';
+          cp.options.forEach(function(opt,oi){
+            h+='<span style="color:'+CP_COLORS[oi%CP_COLORS.length]+'"> '+opt+'</span>';
+            if(oi<cp.options.length-1)h+=' | ';
+          });
+          h+='</div>';
+        });
+        h+='</div>';
+      }
     }
     h+='</div>';
   })}
   el.innerHTML=h;
 }
 
-// Event delegation for lists page
+// Event delegation for lists
 document.addEventListener('click',function(e){
   var t=e.target;
-  // Walk up to find data-action
   while(t&&t!==document.body&&!t.dataset.action)t=t.parentElement;
   if(!t||!t.dataset.action)return;
   var a=t.dataset.action,li=parseInt(t.dataset.li),ci=parseInt(t.dataset.ci),mi=parseInt(t.dataset.mi);
   if(a==='addcp'){
-    var name=prompt('Checkpoint name (e.g. "Bus Attendance", "Has Instrument"):');
+    var name=prompt('Variable name (e.g. "Transportation Home", "Has Materials", "Attendance Check 1"):');
     if(!name||!name.trim())return;
+    var opts=prompt('Options separated by commas (e.g. "Bus, Car Pickup, No Show" or "Yes, No" or "Present, Absent, Late"):');
+    if(!opts||!opts.trim())return;
+    var optArr=opts.split(',').map(function(s){return s.trim()}).filter(function(s){return s});
+    if(!optArr.length)return;
     if(!LISTS[li].checkpoints)LISTS[li].checkpoints=[];
     if(!LISTS[li].checks)LISTS[li].checks={};
-    LISTS[li].checkpoints.push(name.trim());
+    LISTS[li].checkpoints.push({name:name.trim(),options:optArr});
     svL();dpLists();
   }else if(a==='removecp'){
     e.stopPropagation();
-    var cpN=LISTS[li].checkpoints[ci];
+    var cpN=LISTS[li].checkpoints[ci].name;
     if(!confirm('Remove "'+cpN+'"?'))return;
     LISTS[li].checkpoints.splice(ci,1);
     if(LISTS[li].checks){Object.keys(LISTS[li].checks).forEach(function(m){if(LISTS[li].checks[m])delete LISTS[li].checks[m][cpN]})}
     svL();dpLists();
-  }else if(a==='toggleall'){
-    var cpA=LISTS[li].checkpoints[ci];
-    var allOn=LISTS[li].members.every(function(m){return LISTS[li].checks[m]&&LISTS[li].checks[m][cpA]});
-    LISTS[li].members.forEach(function(m){if(!LISTS[li].checks[m])LISTS[li].checks[m]={};LISTS[li].checks[m][cpA]=!allOn});
-    svL();dpLists();
-  }else if(a==='check'){
-    var st=LISTS[li].members[mi],cpC=LISTS[li].checkpoints[ci];
+  }else if(a==='cycle'){
+    var st=LISTS[li].members[mi];
+    var cp=LISTS[li].checkpoints[ci];
     if(!LISTS[li].checks[st])LISTS[li].checks[st]={};
-    LISTS[li].checks[st][cpC]=!LISTS[li].checks[st][cpC];
+    var cur=LISTS[li].checks[st][cp.name]||'';
+    var curIdx=cp.options.indexOf(cur);
+    var nextIdx=(curIdx+1)%( cp.options.length+1);// +1 for blank
+    LISTS[li].checks[st][cp.name]=nextIdx<cp.options.length?cp.options[nextIdx]:'';
     svL();dpLists();
   }else if(a==='phone'){
     showContact(LISTS[li].members[mi]);
