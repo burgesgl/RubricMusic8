@@ -460,37 +460,124 @@ function resetSpin(){
 // === LISTS PAGE ===
 function dpLists(){
   const el=document.getElementById('pageArea');
-  let h=`<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById('imp').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>`;
-  if(!LISTS.length){h+=`<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list to pull students from any class.</div>`}
-  else{LISTS.forEach((lst,i)=>{
-    h+=`<div class="list-card"><div class="list-header" onclick="toggleListExpand(${i})"><div><span class="list-name">${lst.name}</span></div><span class="list-count">${lst.members.length} students</span></div>`;
-    h+=`<div class="list-members">${lst.members.map(m=>{const src=ALL_SOURCES.find(s=>s.roster.includes(m));return`<span class="list-tag">${src?'<span class="src-label">'+src.label+'</span>':''}${m}</span>`}).join('')}</div>`;
-    h+=`<div class="list-actions"><button class="spin" onclick="openSpinList(LISTS[${i}].members,LISTS[${i}].name)">&#127922; Spin</button><button onclick="editList(${i})">Edit</button><button onclick="deleteList(${i})">Delete</button></div></div>`;
+  let h='<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById(\'imp\').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>';
+  if(!LISTS.length){h+='<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list for field trips, events, group lessons, etc.</div>'}
+  else{LISTS.forEach(function(lst,li){
+    if(!lst.checkpoints)lst.checkpoints=[];
+    if(!lst.checks)lst.checks={};
+    h+='<div class="list-card">';
+    h+='<div class="list-header"><div><span class="list-name">'+lst.name+'</span> <span class="list-count">('+lst.members.length+' students)</span></div>';
+    h+='<div style="display:flex;gap:4px">';
+    h+='<button class="pk in" style="font-size:.75em;padding:3px 8px" data-action="spin" data-li="'+li+'">&#x1F3B2; Spin</button>';
+    h+='<button class="pk" style="font-size:.75em;padding:3px 8px" data-action="editlist" data-li="'+li+'">Edit</button>';
+    h+='<button class="pk" style="font-size:.75em;padding:3px 8px;border-color:#c41e3a" data-action="deletelist" data-li="'+li+'">Delete</button>';
+    h+='</div></div>';
+
+    // Checkpoint bar
+    h+='<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">';
+    h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" data-action="addcp" data-li="'+li+'">+ Add Checkpoint</button>';
+    lst.checkpoints.forEach(function(cp,ci){
+      var total=lst.members.length;
+      var checked=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp]}).length;
+      var pct=total?Math.round(checked/total*100):0;
+      var col=pct===100?'#1b7340':pct>=75?'#2e5090':pct>=50?'#b8860b':'#c41e3a';
+      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp+': '+checked+'/'+total+' ('+pct+'%)</span>';
+    });
+    h+='</div>';
+
+    // Student table
+    if(lst.members.length){
+      h+='<div style="overflow-x:auto;margin-top:8px"><table class="sh" style="font-size:.74em"><thead><tr><th style="text-align:left">Student</th><th>&#x260E;</th>';
+      lst.checkpoints.forEach(function(cp,ci){
+        h+='<th style="min-width:60px;cursor:pointer" data-action="toggleall" data-li="'+li+'" data-ci="'+ci+'">'+cp+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove">&#x2715;</span></th>';
+      });
+      h+='</tr></thead><tbody>';
+      lst.members.forEach(function(m,mi){
+        var ct=getContact(m);
+        h+='<tr><td style="text-align:left">'+m+'</td>';
+        h+='<td style="text-align:center">'+(ct&&ct.p?'<span style="cursor:pointer;opacity:.5" data-action="phone" data-mi="'+mi+'" data-li="'+li+'">&#x260E;</span>':'')+'</td>';
+        lst.checkpoints.forEach(function(cp,ci){
+          var chk=lst.checks[m]&&lst.checks[m][cp];
+          h+='<td style="text-align:center;cursor:pointer;color:'+(chk?'#1b7340':'#555')+';font-size:1.1em" data-action="check" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+(chk?'&#x2705;':'&#x2B1C;')+'</td>';
+        });
+        h+='</tr>';
+      });
+      h+='</tbody></table></div>';
+    }
+    h+='</div>';
   })}
   el.innerHTML=h;
 }
+
+// Event delegation for lists page
+document.addEventListener('click',function(e){
+  var t=e.target;
+  // Walk up to find data-action
+  while(t&&t!==document.body&&!t.dataset.action)t=t.parentElement;
+  if(!t||!t.dataset.action)return;
+  var a=t.dataset.action,li=parseInt(t.dataset.li),ci=parseInt(t.dataset.ci),mi=parseInt(t.dataset.mi);
+  if(a==='addcp'){
+    var name=prompt('Checkpoint name (e.g. "Bus Attendance", "Has Instrument"):');
+    if(!name||!name.trim())return;
+    if(!LISTS[li].checkpoints)LISTS[li].checkpoints=[];
+    if(!LISTS[li].checks)LISTS[li].checks={};
+    LISTS[li].checkpoints.push(name.trim());
+    svL();dpLists();
+  }else if(a==='removecp'){
+    e.stopPropagation();
+    var cpN=LISTS[li].checkpoints[ci];
+    if(!confirm('Remove "'+cpN+'"?'))return;
+    LISTS[li].checkpoints.splice(ci,1);
+    if(LISTS[li].checks){Object.keys(LISTS[li].checks).forEach(function(m){if(LISTS[li].checks[m])delete LISTS[li].checks[m][cpN]})}
+    svL();dpLists();
+  }else if(a==='toggleall'){
+    var cpA=LISTS[li].checkpoints[ci];
+    var allOn=LISTS[li].members.every(function(m){return LISTS[li].checks[m]&&LISTS[li].checks[m][cpA]});
+    LISTS[li].members.forEach(function(m){if(!LISTS[li].checks[m])LISTS[li].checks[m]={};LISTS[li].checks[m][cpA]=!allOn});
+    svL();dpLists();
+  }else if(a==='check'){
+    var st=LISTS[li].members[mi],cpC=LISTS[li].checkpoints[ci];
+    if(!LISTS[li].checks[st])LISTS[li].checks[st]={};
+    LISTS[li].checks[st][cpC]=!LISTS[li].checks[st][cpC];
+    svL();dpLists();
+  }else if(a==='phone'){
+    showContact(LISTS[li].members[mi]);
+  }else if(a==='spin'){
+    openSpinList(LISTS[li].members,LISTS[li].name);
+  }else if(a==='editlist'){
+    editList(li);
+  }else if(a==='deletelist'){
+    deleteList(li);
+  }
+});
+
 function newList(){ei=null;tmp={name:'',members:[]};document.getElementById('mt').textContent='New List';dMList();document.getElementById('ov').classList.add('open')}
 function editList(i){ei=i;tmp={name:LISTS[i].name,members:[...LISTS[i].members]};document.getElementById('mt').textContent='Edit: '+LISTS[i].name;dMList();document.getElementById('ov').classList.add('open')}
 function deleteList(i){if(!confirm('Delete "'+LISTS[i].name+'"?'))return;LISTS.splice(i,1);svL();dpLists()}
 
 function dMList(){
-  const el=document.getElementById('mb');
-  let h=`<div class="sl">List Name</div><input class="gi" value="${tmp.name}" oninput="tmp.name=this.value" placeholder="e.g. Group Lessons - Trumpet, Sectionals...">`;
-  ALL_SOURCES.forEach(src=>{
-    h+=`<div class="sl" style="margin-top:10px">${src.label}</div><div class="pks">`;
-    src.roster.forEach(s=>{if(s==='Student, Tester')return;const me=tmp.members.includes(s);
-    h+=`<button class="pk ${me?'in':''}" onclick="togListMember('${esc(s)}')">${s.split(',')[0]}</button>`});
-    h+=`</div>`;
+  var el=document.getElementById('mb');
+  var h='<div class="sl">List Name</div><input class="gi" value="'+tmp.name+'" oninput="tmp.name=this.value" placeholder="e.g. Symphony Field Trip, Trumpet Sectionals...">';
+  ALL_SOURCES.forEach(function(src){
+    h+='<div class="sl" style="margin-top:10px">'+src.label+'</div><div class="pks">';
+    src.roster.forEach(function(s){if(s==='Student, Tester')return;var me=tmp.members.includes(s);
+    h+='<button class="pk '+(me?'in':'')+'" onclick="togListMember(\''+esc(s)+'\')">'+s.split(',')[0]+'</button>'});
+    h+='</div>';
   });
-  h+=`<div style="margin-top:10px;font-size:.82em;color:#888">${tmp.members.length} students selected</div>`;
-  h+=`<div class="mf" style="margin-top:12px">`;
-  if(ei!==null)h+=`<button class="dl" onclick="deleteList(${ei});closeM()">Delete</button>`;
-  h+=`<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveList()">Save</button></div>`;
+  h+='<div style="margin-top:10px;font-size:.82em;color:#888">'+tmp.members.length+' students selected</div>';
+  h+='<div class="mf" style="margin-top:12px">';
+  if(ei!==null)h+='<button class="dl" onclick="deleteList('+ei+');closeM()">Delete</button>';
+  h+='<button class="ca" onclick="closeM()">Cancel</button><button class="sv" onclick="saveList()">Save</button></div>';
   el.innerHTML=h;
 }
-function togListMember(s){const i=tmp.members.indexOf(s);if(i>=0)tmp.members.splice(i,1);else tmp.members.push(s);dMList()}
+function togListMember(s){var i=tmp.members.indexOf(s);if(i>=0)tmp.members.splice(i,1);else tmp.members.push(s);dMList()}
 function saveList(){if(!tmp.name.trim()){alert('Enter a list name.');return}if(!tmp.members.length){alert('Add students.');return}
-const o={name:tmp.name.trim(),members:[...tmp.members]};if(ei!==null)LISTS[ei]=o;else LISTS.push(o);svL();dp();closeM()}
+  if(ei!==null){LISTS[ei].name=tmp.name.trim();LISTS[ei].members=[...tmp.members];
+    if(!LISTS[ei].checkpoints)LISTS[ei].checkpoints=[];
+    if(!LISTS[ei].checks)LISTS[ei].checks={};
+    Object.keys(LISTS[ei].checks).forEach(function(m){if(!tmp.members.includes(m))delete LISTS[ei].checks[m]});
+  }else{LISTS.push({name:tmp.name.trim(),members:[...tmp.members],checkpoints:[],checks:{}})}
+  svL();dp();closeM()}
 
 // === EXPORT ===
 function eC(){
