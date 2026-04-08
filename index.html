@@ -458,18 +458,23 @@ function resetSpin(){
 }
 
 // === LISTS PAGE ===
-// Checkpoint structure: {name:'Bus Home', options:['Bus','Car Pickup','No Show'], colors:['#1b7340','#2e5090','#c41e3a']}
-// Checks: lst.checks[studentName][checkpointName] = 'Bus' (the selected option string, or '' for unset)
-var CP_COLORS=['#1b7340','#2e5090','#e8740c','#6d2e46','#b8860b','#c41e3a','#555','#4a90d9'];
-var CP_ICONS=['&#x2705;','&#x1F699;','&#x1F3E0;','&#x274C;','&#x26A0;','&#x2B50;','&#x1F3B5;','&#x1F4DE;'];
+var CP_COLORS=['#1b7340','#2e5090','#e8740c','#6d2e46','#b8860b','#c41e3a','#4a90d9','#555'];
+var activePicker=null;
+
+function closePicker(){if(activePicker){activePicker.remove();activePicker=null}}
 
 function dpLists(){
+  closePicker();
   var el=document.getElementById('pageArea');
   var h='<div class="bar"><button class="go" onclick="newList()">+ New List</button><button onclick="eJ()">Save Backup</button><button onclick="document.getElementById(\'imp\').click()">Load Backup</button><input type="file" id="imp" accept=".json" style="display:none" onchange="iJ(event)"></div>';
   if(!LISTS.length){h+='<div style="text-align:center;padding:30px;color:#555">No lists yet. Create a list for field trips, events, group lessons, etc.</div>'}
   else{LISTS.forEach(function(lst,li){
     if(!lst.checkpoints)lst.checkpoints=[];
     if(!lst.checks)lst.checks={};
+    // Migrate old boolean checkpoints to new object format
+    lst.checkpoints=lst.checkpoints.map(function(cp){
+      if(typeof cp==='string')return{name:cp,options:['Yes']};return cp;
+    });
     h+='<div class="list-card">';
     h+='<div class="list-header"><div><span class="list-name">'+lst.name+'</span> <span class="list-count">('+lst.members.length+' students)</span></div>';
     h+='<div style="display:flex;gap:4px">';
@@ -477,7 +482,7 @@ function dpLists(){
     h+='<button class="pk" style="font-size:.75em;padding:3px 8px" data-action="editlist" data-li="'+li+'">Edit</button>';
     h+='<button class="pk" style="font-size:.75em;padding:3px 8px;border-color:#c41e3a" data-action="deletelist" data-li="'+li+'">Delete</button>';
     h+='</div></div>';
-    // Checkpoint summary + add button
+    // Variable summary
     h+='<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;align-items:center">';
     h+='<button class="pk" style="font-size:.72em;padding:3px 8px;border-color:#1b7340;color:#1b7340" data-action="addcp" data-li="'+li+'">+ Add Variable</button>';
     lst.checkpoints.forEach(function(cp,ci){
@@ -485,14 +490,19 @@ function dpLists(){
       var filled=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp.name]}).length;
       var pct=total?Math.round(filled/total*100):0;
       var col=pct===100?'#1b7340':pct>=75?'#2e5090':pct>=50?'#b8860b':'#c41e3a';
-      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp.name+': '+filled+'/'+total+' ('+pct+'%)</span>';
+      // Show breakdown per option
+      var breakdown=cp.options.map(function(opt,oi){
+        var cnt=lst.members.filter(function(m){return lst.checks[m]&&lst.checks[m][cp.name]===opt}).length;
+        return cnt?'<span style="color:'+CP_COLORS[oi%CP_COLORS.length]+'">'+opt+':'+cnt+'</span>':'';
+      }).filter(function(s){return s}).join(' ');
+      h+='<span style="background:#12121f;border:1px solid '+col+';border-radius:4px;padding:2px 8px;font-size:.72em;color:'+col+'">'+cp.name+' '+filled+'/'+total+' ('+pct+'%) '+(breakdown?' ['+breakdown+']':'')+'</span>';
     });
     h+='</div>';
     // Table
     if(lst.members.length){
       h+='<div style="overflow-x:auto;margin-top:8px"><table class="sh" style="font-size:.74em"><thead><tr><th style="text-align:left">Student</th><th>&#x260E;</th>';
       lst.checkpoints.forEach(function(cp,ci){
-        h+='<th style="min-width:80px">'+cp.name+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove variable">&#x2715;</span></th>';
+        h+='<th style="min-width:90px">'+cp.name+' <span style="font-size:.7em;cursor:pointer;color:#c41e3a" data-action="removecp" data-li="'+li+'" data-ci="'+ci+'" title="Remove">&#x2715;</span></th>';
       });
       h+='</tr></thead><tbody>';
       lst.members.forEach(function(m,mi){
@@ -502,22 +512,20 @@ function dpLists(){
         lst.checkpoints.forEach(function(cp,ci){
           var val=(lst.checks[m]&&lst.checks[m][cp.name])||'';
           var optIdx=val?cp.options.indexOf(val):-1;
-          var bgCol=optIdx>=0?CP_COLORS[optIdx%CP_COLORS.length]:'transparent';
-          var border=val?bgCol:'#333';
-          var display=val||'&#x2B1C;';
-          h+='<td style="text-align:center;cursor:pointer;font-size:.82em;background:'+(val?bgCol+'33':'transparent')+';color:'+(val?bgCol:'#555')+';border:1px solid #2a2a42" data-action="cycle" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+display+'</td>';
+          var c=optIdx>=0?CP_COLORS[optIdx%CP_COLORS.length]:'#555';
+          var bg=optIdx>=0?c+'22':'transparent';
+          h+='<td style="text-align:center;cursor:pointer;font-size:.82em;padding:4px 6px;background:'+bg+';color:'+c+'" data-action="pick" data-li="'+li+'" data-mi="'+mi+'" data-ci="'+ci+'">'+(val||'<span style="opacity:.3">&#x2014;</span>')+'</td>';
         });
         h+='</tr>';
       });
       h+='</tbody></table></div>';
-      // Legend for each checkpoint
+      // Legend
       if(lst.checkpoints.length){
-        h+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:8px">';
-        lst.checkpoints.forEach(function(cp,ci){
-          h+='<div style="font-size:.72em;color:#888"><strong>'+cp.name+':</strong> ';
+        h+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:10px">';
+        lst.checkpoints.forEach(function(cp){
+          h+='<div style="font-size:.72em;color:#888"><strong style="color:#aaa">'+cp.name+':</strong> ';
           cp.options.forEach(function(opt,oi){
-            h+='<span style="color:'+CP_COLORS[oi%CP_COLORS.length]+'"> '+opt+'</span>';
-            if(oi<cp.options.length-1)h+=' | ';
+            h+='<span style="display:inline-block;background:'+CP_COLORS[oi%CP_COLORS.length]+'22;color:'+CP_COLORS[oi%CP_COLORS.length]+';border:1px solid '+CP_COLORS[oi%CP_COLORS.length]+';border-radius:3px;padding:0 5px;margin:0 2px;font-size:.95em">'+opt+'</span>';
           });
           h+='</div>';
         });
@@ -529,16 +537,61 @@ function dpLists(){
   el.innerHTML=h;
 }
 
-// Event delegation for lists
+function showPicker(td,li,mi,ci){
+  closePicker();
+  var lst=LISTS[li],cp=lst.checkpoints[ci],m=lst.members[mi];
+  var cur=(lst.checks[m]&&lst.checks[m][cp.name])||'';
+  var rect=td.getBoundingClientRect();
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;z-index:200;background:#1a1a2e;border:2px solid #e8740c;border-radius:8px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:3px;min-width:120px';
+  d.style.left=Math.min(rect.left,window.innerWidth-160)+'px';
+  d.style.top=Math.min(rect.bottom+4,window.innerHeight-200)+'px';
+  // Options
+  cp.options.forEach(function(opt,oi){
+    var btn=document.createElement('button');
+    var c=CP_COLORS[oi%CP_COLORS.length];
+    var isCur=cur===opt;
+    btn.style.cssText='display:block;width:100%;padding:6px 10px;border:2px solid '+(isCur?c:'#333')+';background:'+(isCur?c+'33':'#12121f')+';color:'+(isCur?c:'#ccc')+';border-radius:5px;cursor:pointer;font-size:.82em;text-align:left;font-weight:'+(isCur?'bold':'normal');
+    btn.textContent=(isCur?'\u2713 ':'')+opt;
+    btn.onmouseover=function(){this.style.borderColor=c;this.style.color=c};
+    btn.onmouseout=function(){if(!isCur){this.style.borderColor='#333';this.style.color='#ccc'}};
+    btn.onclick=function(e){
+      e.stopPropagation();
+      if(!lst.checks[m])lst.checks[m]={};
+      lst.checks[m][cp.name]=opt;
+      svL();closePicker();dpLists();
+    };
+    d.appendChild(btn);
+  });
+  // Clear button
+  var clr=document.createElement('button');
+  clr.style.cssText='display:block;width:100%;padding:5px 10px;border:1px solid #444;background:#0f0f1a;color:#888;border-radius:5px;cursor:pointer;font-size:.78em;text-align:left;margin-top:2px';
+  clr.textContent='\u2715 Clear';
+  clr.onclick=function(e){
+    e.stopPropagation();
+    if(lst.checks[m])delete lst.checks[m][cp.name];
+    svL();closePicker();dpLists();
+  };
+  d.appendChild(clr);
+  document.body.appendChild(d);
+  activePicker=d;
+  setTimeout(function(){
+    document.addEventListener('click',function handler(e){
+      if(!d.contains(e.target)){closePicker();document.removeEventListener('click',handler)}
+    });
+  },10);
+}
+
+// Event delegation
 document.addEventListener('click',function(e){
   var t=e.target;
   while(t&&t!==document.body&&!t.dataset.action)t=t.parentElement;
   if(!t||!t.dataset.action)return;
   var a=t.dataset.action,li=parseInt(t.dataset.li),ci=parseInt(t.dataset.ci),mi=parseInt(t.dataset.mi);
   if(a==='addcp'){
-    var name=prompt('Variable name (e.g. "Transportation Home", "Has Materials", "Attendance Check 1"):');
+    var name=prompt('Variable name:\n(e.g. "Transportation Home", "Has Materials", "Attendance")');
     if(!name||!name.trim())return;
-    var opts=prompt('Options separated by commas (e.g. "Bus, Car Pickup, No Show" or "Yes, No" or "Present, Absent, Late"):');
+    var opts=prompt('Options separated by commas:\n(e.g. "Bus, Car Pickup, No Show")\n(e.g. "Present, Absent, Late")\n(e.g. "Has All, Missing Instrument, Missing Everything")');
     if(!opts||!opts.trim())return;
     var optArr=opts.split(',').map(function(s){return s.trim()}).filter(function(s){return s});
     if(!optArr.length)return;
@@ -553,15 +606,9 @@ document.addEventListener('click',function(e){
     LISTS[li].checkpoints.splice(ci,1);
     if(LISTS[li].checks){Object.keys(LISTS[li].checks).forEach(function(m){if(LISTS[li].checks[m])delete LISTS[li].checks[m][cpN]})}
     svL();dpLists();
-  }else if(a==='cycle'){
-    var st=LISTS[li].members[mi];
-    var cp=LISTS[li].checkpoints[ci];
-    if(!LISTS[li].checks[st])LISTS[li].checks[st]={};
-    var cur=LISTS[li].checks[st][cp.name]||'';
-    var curIdx=cp.options.indexOf(cur);
-    var nextIdx=(curIdx+1)%( cp.options.length+1);// +1 for blank
-    LISTS[li].checks[st][cp.name]=nextIdx<cp.options.length?cp.options[nextIdx]:'';
-    svL();dpLists();
+  }else if(a==='pick'){
+    e.stopPropagation();
+    showPicker(t,li,mi,ci);
   }else if(a==='phone'){
     showContact(LISTS[li].members[mi]);
   }else if(a==='spin'){
